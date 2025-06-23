@@ -50,7 +50,7 @@
         .aspect-w-16 { position: relative; padding-bottom: 56.25%; }
         .aspect-w-16 > iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         /* Impede o scroll do body quando o menu mobile está aberto */
-        .overflow-hidden-mobile { overflow: hidden; }
+        body.overflow-hidden-mobile { overflow: hidden; }
     </style>
 </head>
 <body class="bg-brand-light font-sans text-brand-dark antialiased" :class="{ 'overflow-hidden-mobile': isMenuOpen }" x-data="{ isVideoOpen: false, isMenuOpen: false }" @keydown.escape.window="isVideoOpen = false; isMenuOpen = false">
@@ -75,7 +75,7 @@
             
             <!-- BOTÃO MENU MOBILE -->
             <div class="md:hidden">
-                <button @click="isMenuOpen = !isMenuOpen" class="text-brand-dark">
+                <button @click="isMenuOpen = !isMenuOpen" class="text-brand-dark z-50 relative">
                     <svg x-show="!isMenuOpen" class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
@@ -95,12 +95,12 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="fixed inset-0 bg-brand-light z-30 pt-20">
-        <nav class="container mx-auto px-6 flex flex-col items-center text-center space-y-6">
-            <a href="#vantagens" @click="isMenuOpen = false" class="font-heading text-2xl text-brand-dark hover:text-brand-accent transition-colors">Vantagens</a>
-            <a href="#plataforma" @click="isMenuOpen = false" class="font-heading text-2xl text-brand-dark hover:text-brand-accent transition-colors">A Plataforma</a>
-            <a href="#diferencial" @click="isMenuOpen = false" class="font-heading text-2xl text-brand-dark hover:text-brand-accent transition-colors">O Diferencial</a>
-            <a href="#convite" @click="isMenuOpen = false" class="mt-6 bg-brand-dark text-white px-8 py-3 rounded-full hover:bg-black transition-all transform hover:scale-105 shadow-md">
+        class="fixed inset-0 bg-brand-light z-30 pt-24">
+        <nav class="container mx-auto px-6 flex flex-col items-center text-center h-full">
+            <a href="#vantagens" @click="isMenuOpen = false" class="font-heading text-2xl text-brand-dark hover:text-brand-accent transition-colors py-3">Vantagens</a>
+            <a href="#plataforma" @click="isMenuOpen = false" class="font-heading text-2xl text-brand-dark hover:text-brand-accent transition-colors py-3">A Plataforma</a>
+            <a href="#diferencial" @click="isMenuOpen = false" class="font-heading text-2xl text-brand-dark hover:text-brand-accent transition-colors py-3">O Diferencial</a>
+            <a href="#convite" @click="isMenuOpen = false" class="mt-8 bg-brand-dark text-white px-8 py-3 rounded-full hover:bg-black transition-all transform hover:scale-105 shadow-md">
                 Agende uma Apresentação
             </a>
         </nav>
@@ -118,7 +118,8 @@
                 <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-600 mb-10">
                     A ABAPlay não é uma ferramenta. É a assinatura das clínicas de desenvolvimento infantil que operam no mais alto padrão de cuidado, gestão e prestígio.
                 </p>
-                <a href="#convite" class="bg-brand-accent text-white px-8 md:px-10 py-3 md:py-4 rounded-full text-base md:text-lg font-semibold hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <!-- BOTÃO CORRIGIDO -->
+                <a href="#convite" class="whitespace-nowrap inline-block bg-brand-accent text-white px-6 sm:px-8 md:px-10 py-3 md:py-4 rounded-full text-sm sm:text-base md:text-lg font-semibold hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                     Solicite sua Apresentação Estratégica
                 </a>
             </div>
@@ -281,7 +282,8 @@
                     <p class="text-lg md:text-xl text-gray-600 mb-10">
                         Clínicas de alto desempenho não utilizam ferramentas comuns. Elas adotam parceiros estratégicos. Permita-nos demonstrar em uma apresentação exclusiva como a ABAPlay pode se tornar a assinatura da sua excelência.
                     </p>
-                     <a href="#" class="bg-brand-accent text-white px-8 md:px-10 py-3 md:py-4 rounded-full text-base md:text-lg font-semibold hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                     <!-- BOTÃO CORRIGIDO -->
+                     <a href="#" class="whitespace-nowrap inline-block bg-brand-accent text-white px-6 sm:px-8 md:px-10 py-3 md:py-4 rounded-full text-sm sm:text-base md:text-lg font-semibold hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                         Agendar Apresentação Estratégica
                     </a>
                     <p class="text-sm text-gray-600 mt-6">As vagas para novas parcerias são limitadas para garantir um suporte de excelência.</p>
