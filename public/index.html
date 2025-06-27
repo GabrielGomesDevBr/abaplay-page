@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABAPlay | A Assinatura da Excelência Clínica</title>
+
+    <!-- 1. Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 2. Alpine.js para interatividade (com 'defer' para performance) -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- 3. Fontes (Poppins & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- 4. CSS para o Chat -->
+    <link rel="stylesheet" href="css/chat.css">
+
+    <!-- 5. Configuração da Identidade Visual (Tailwind) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-dark': '#0d1117',
+                        'brand-light': '#ffffff',
+                        'brand-bg': '#f8f9fa',
+                        'brand-muted': '#9ca3af',
+                        'brand-stroke': '#30363d',
+                        'brand-accent': '#4f46e5',
+                        'brand-accent-light': '#eef2ff',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Estilos originais */
+        .transition-all { transition-duration: 300ms; }
+        .group:hover .group-hover-effect { 
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        }
+        [x-cloak] { display: none !important; }
+        .aspect-w-16 { position: relative; padding-bottom: 56.25%; }
+        .aspect-w-16 > iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        
+        /* Modificado para incluir o chat */
+        body.overflow-hidden-scroll { overflow: hidden; }
+
+        /* CSS para controlar a visibilidade dos ícones do botão de envio */
+        .chat-send-btn .icon-send { display: inline-block; }
+        .chat-send-btn .icon-loading { display: none; }
+        .chat-send-btn.is-loading .icon-send { display: none; }
+        .chat-send-btn.is-loading .icon-loading { display: inline-block; }
+    </style>
+</head>
+<body class="bg-brand-light font-sans text-brand-dark antialiased" 
+    x-data="{ isVideoOpen: false, isMenuOpen: false, isChatOpen: false }" 
+    :class="{ 'overflow-hidden-scroll': isMenuOpen || isChatOpen }" 
+    @keydown.escape.window="isVideoOpen = false; isMenuOpen = false; isChatOpen = false">
+
+    <!-- ===== HEADER ===== -->
+    <header class="fixed top-0 left-0 right-0 bg-brand-light/80 backdrop-blur-md z-40 border-b border-gray-200/50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#hero" @click="isMenuOpen = false">
+                <img src="assets/images/logo.png" alt="Logo ABAPlay" class="h-9 w-auto">
+            </a>
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#vantagens" class="text-gray-600 hover:text-brand-dark transition-colors">Vantagens</a>
+                <a href="#plataforma" class="text-gray-600 hover:text-brand-dark transition-colors">A Plataforma</a>
+                <a href="#diferencial" class="text-gray-600 hover:text-brand-dark transition-colors">O Diferencial</a>
+            </nav>
+            <a href="#" @click.prevent="isChatOpen = true" class="hidden md:inline-block bg-brand-dark text-white px-5 py-2 rounded-full hover:bg-black transition-all transform hover:scale-105 shadow-md">
+                Especialista Virtual
+            </a>
+            <div class="md:hidden">
+                <button @click="isMenuOpen = !isMenuOpen" class="text-brand-dark z-50 relative">
+                    <svg x-show="!isMenuOpen" class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+                    <svg x-show="isMenuOpen" x-cloak class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MENU OVERLAY MOBILE ===== -->
+    <div x-show="isMenuOpen" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-brand-light z-30 pt-24">
+        <nav class="container mx-auto px-6 flex flex-col items-center text-center h-full">
+            <a href="#vantagens" @click="isMenuOpen = false" class="font-heading text-2xl text-brand-dark hover:text-brand-accent transition-colors py-3">Vantagens</a>
+            <a href="#plataforma" @click="isMenuOpen = false" class="font-heading text-2xl text-brand-dark hover:text-brand-accent transition-colors py-3">A Plataforma</a>
+            <a href="#diferencial" @click="isMenuOpen = false" class="font-heading text-2xl text-brand-dark hover:text-brand-accent transition-colors py-3">O Diferencial</a>
+            <a href="#" @click.prevent="isMenuOpen = false; isChatOpen = true" class="mt-8 bg-brand-dark text-white px-8 py-3 rounded-full hover:bg-black transition-all transform hover:scale-105 shadow-md">
+                Especialista Virtual
+            </a>
+        </nav>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main>
+        <section id="hero" class="pt-32 md:pt-40 pb-24 text-center bg-brand-light">
+            <div class="container mx-auto px-6">
+                <h1 class="font-heading text-4xl sm:text-5xl md:text-7xl font-bold text-brand-dark mb-6 leading-tight">
+                    A Excelência Clínica Começa com a Serenidade Operacional.
+                </h1>
+                <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-600 mb-10">
+                    A ABAPlay não é uma ferramenta. É a assinatura das clínicas de desenvolvimento infantil que operam no mais alto padrão de cuidado, gestão e prestígio.
+                </p>
+                <a href="#" @click.prevent="isChatOpen = true" class="whitespace-nowrap inline-block bg-brand-accent text-white px-6 sm:px-8 md:px-10 py-3 md:py-4 rounded-full text-sm sm:text-base md:text-lg font-semibold hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    Converse com nosso especialista virtual
+                </a>
+            </div>
+        </section>
+
+        <section id="video" class="py-20 md:py-28 bg-brand-bg">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-brand-dark mb-12 max-w-2xl mx-auto">Veja em 90 segundos como redefinimos o fluxo de uma clínica de ponta.</h2>
+                <div @click="isVideoOpen = true" class="relative max-w-4xl mx-auto rounded-xl shadow-2xl overflow-hidden cursor-pointer group">
+                    <img src="https://i.ytimg.com/vi/iJE6QhVqx9M/maxresdefault.jpg" alt="Vídeo de Apresentação da ABAPlay" class="w-full h-auto transition-transform duration-500 group-hover-effect" onerror="this.onerror=null;this.src='https://placehold.co/1280x720/111827/ffffff?text=Apresenta%C3%A7%C3%A3o+ABAPlay';"/>
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center transition-all duration-500 group-hover:bg-black/20">
+                        <div class="transition-transform duration-500 group-hover:scale-110">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-16 h-16 text-white"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm14.024-.983a1.125 1.125 0 010 1.966l-5.603 3.113A1.125 1.125 0 019 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113z" clip-rule="evenodd" /></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="vantagens" class="py-20 md:py-28 bg-brand-dark text-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="font-heading text-3xl md:text-4xl font-bold mb-4">A Vantagem Competitiva que Não se Copia.</h2>
+                    <p class="text-lg text-brand-muted">Nossa plataforma integra os três pilares que definem uma clínica de referência, criando um ciclo virtuoso de crescimento e reputação.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2"><h3 class="font-heading text-2xl font-bold text-white mb-4">Serenidade Operacional</h3><p class="text-brand-muted mb-6">Transforme o caos administrativo em um fluxo intuitivo, liberando sua equipe para o que realmente importa: o cuidado.</p><ul class="space-y-4 text-gray-300"><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Economize até 4h de trabalho por paciente/mês.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Gere relatórios profissionais em PDF com um clique.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Reduza o estresse da equipe e o turnover de talentos.</span></li></ul></div>
+                    <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2"><h3 class="font-heading text-2xl font-bold text-white mb-4">Excelência Clínica</h3><p class="text-brand-muted mb-6">Eleve a qualidade do seu atendimento com uma base de conhecimento curada e supervisionada por especialistas de ponta.</p><ul class="space-y-4 text-gray-300"><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Acesso a +400 programas de intervenção prontos.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Garanta padronização metodológica em toda a equipe.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Atue com a segurança de protocolos baseados em evidência.</span></li></ul></div>
+                    <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2"><h3 class="font-heading text-2xl font-bold text-white mb-4">Aliança com os Pais</h3><p class="text-brand-muted mb-6">Fortaleça a relação com as famílias através de uma comunicação transparente e construa uma reputação de confiança inabalável.</p><ul class="space-y-4 text-gray-300"><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Portal dos pais com acesso a gráficos e anotações.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Aumente o engajamento parental, crucial para a terapia.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Posicione sua clínica como uma parceira de vanguarda.</span></li></ul></div>
+                </div>
+            </div>
+        </section>
+
+         <section id="plataforma" class="py-20 md:py-28 bg-brand-light">
+            <div class="container mx-auto px-6">
+                 <div class="text-center max-w-3xl mx-auto mb-20"><h2 class="font-heading text-3xl md:text-4xl font-bold mb-4">A Plataforma, em Detalhes.</h2><p class="text-lg text-gray-600">Cada recurso foi desenhado para eliminar um obstáculo e criar uma oportunidade.</p></div>
+                <div class="space-y-24">
+                    <div class="grid md:grid-cols-2 gap-12 items-center"><div class="md:order-1"><h3 class="font-heading text-3xl font-bold mb-4">Biblioteca de Programas: O Coração da Terapia.</h3><p class="text-gray-600 leading-relaxed">Abandone as planilhas. Tenha acesso instantâneo a uma biblioteca com mais de 400 programas de intervenção, cobrindo Psicologia, Fonoaudiologia, T.O. e mais. Cada programa, baseado em evidências, garante que sua equipe atue com a segurança de um sênior.</p></div><div class="md:order-2"><img src="assets/images/feature-library.png" alt="Imagem da Biblioteca de Programas ABAPlay" class="rounded-xl shadow-lg w-full" onerror="this.onerror=null;this.src='https://placehold.co/600x450/eef2ff/4f46e5?text=Biblioteca+de+Programas'"/></div></div>
+                     <div class="grid md:grid-cols-2 gap-12 items-center"><div class="md:order-2"><h3 class="font-heading text-3xl font-bold mb-4">Relatórios Instantâneos: Do Clínico ao Estratégico.</h3><p class="text-gray-600 leading-relaxed">Com um único clique, transforme dados brutos em relatórios PDF elegantes e profissionais. Perfeitos para apresentar a evolução aos pais, submeter a convênios ou para análise de supervisão. Libere seus terapeutas da burocracia.</p></div><div class="md:order-1"><img src="assets/images/feature-reports.png" alt="Imagem de Relatórios Instantâneos na ABAPlay" class="rounded-xl shadow-lg w-full" onerror="this.onerror=null;this.src='https://placehold.co/600x450/eef2ff/4f46e5?text=Relat%C3%B3rios+Instant%C3%A2neos'"/></div></div>
+                    <div class="grid md:grid-cols-2 gap-12 items-center"><div class="md:order-1"><h3 class="font-heading text-3xl font-bold mb-4">Portal dos Pais: Transparência que Gera Confiança.</h3><p class="text-gray-600 leading-relaxed">Ofereça às famílias uma janela para o progresso. O portal exclusivo permite que os pais acompanhem gráficos de evolução, vejam programas e leiam anotações. Essa visibilidade cria uma poderosa aliança, tornando os pais verdadeiros parceiros na terapia.</p></div><div class="md:order-2"><img src="assets/images/feature-portal.png" alt="Imagem do Portal dos Pais na ABAPlay" class="rounded-xl shadow-lg w-full" onerror="this.onerror=null;this.src='https://placehold.co/600x450/eef2ff/4f46e5?text=Portal+dos+Pais'"/></div></div>
+                </div>
+            </div>
+         </section>
+
+        <section id="diferencial" class="py-20 md:py-28 bg-brand-dark text-white">
+            <div class="container mx-auto px-6">
+                 <div class="text-center max-w-3xl mx-auto mb-16"><h2 class="font-heading text-3xl md:text-4xl font-bold mb-4">O Diferencial ABAPlay.</h2><p class="text-lg text-brand-muted">Não se trata de uma melhoria. É uma transformação completa na forma de operar.</p></div>
+                <div class="max-w-4xl mx-auto bg-gray-800/50 rounded-xl p-2">
+                     <div class="divide-y divide-gray-700">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"><div class="md:col-span-1"><h4 class="font-bold text-lg text-white">Gestão de Programas</h4></div><div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6"><div><p class="text-sm font-bold text-red-400 mb-2">MODO COMUM</p><p class="text-gray-400">Planilhas e pastas desorganizadas.</p></div><div><p class="text-sm font-bold text-green-400 mb-2">MODO ABAPLAY</p><p class="text-gray-200">Biblioteca centralizada e padronizada.</p></div></div></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"><div class="md:col-span-1"><h4 class="font-bold text-lg text-white">Coleta de Dados</h4></div><div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6"><div><p class="text-sm font-bold text-red-400 mb-2">MODO COMUM</p><p class="text-gray-400">Papel, caneta e digitação posterior.</p></div><div><p class="text-sm font-bold text-green-400 mb-2">MODO ABAPLAY</p><p class="text-gray-200">Registro em tempo real, em segundos.</p></div></div></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"><div class="md:col-span-1"><h4 class="font-bold text-lg text-white">Criação de Relatórios</h4></div><div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6"><div><p class="text-sm font-bold text-red-400 mb-2">MODO COMUM</p><p class="text-gray-400">Horas para compilar dados e formatar.</p></div><div><p class="text-sm font-bold text-green-400 mb-2">MODO ABAPLAY</p><p class="text-gray-200">PDFs profissionais gerados na hora.</p></div></div></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"><div class="md:col-span-1"><h4 class="font-bold text-lg text-white">Comunicação com Pais</h4></div><div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6"><div><p class="text-sm font-bold text-red-400 mb-2">MODO COMUM</p><p class="text-gray-400">Reuniões esporádicas e relatórios verbais.</p></div><div><p class="text-sm font-bold text-green-400 mb-2">MODO ABAPLAY</p><p class="text-gray-200">Acesso 24/7 a gráficos de progresso.</p></div></div></div>
+                     </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="convite" class="bg-brand-bg">
+            <div class="container mx-auto px-6 py-20 md:py-28 text-center">
+                <div class="max-w-3xl mx-auto">
+                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-brand-dark mb-6">Sua clínica está pronta para o próximo nível.</h2>
+                    <p class="text-lg md:text-xl text-gray-600 mb-10">
+                        Clínicas de alto desempenho não utilizam ferramentas comuns. Elas adotam parceiros estratégicos. Permita-nos demonstrar em uma apresentação exclusiva como a ABAPlay pode se tornar a assinatura da sua excelência.
+                    </p>
+                     <a href="#" @click.prevent="isChatOpen = true" class="whitespace-nowrap inline-block bg-brand-accent text-white px-6 sm:px-8 md:px-10 py-3 md:py-4 rounded-full text-sm sm:text-base md:text-lg font-semibold hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        Converse com nosso especialista virtual
+                    </a>
+                    <p class="text-sm text-gray-600 mt-6">As vagas para novas parcerias são limitadas para garantir um suporte de excelência.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="bg-brand-dark text-white py-12">
+        <div class="container mx-auto px-6 text-center text-gray-400">
+            <a href="#hero" class="inline-block mb-4">
+                <img src="assets/images/logo.png" alt="Logo ABAPlay" class="h-9 w-auto opacity-70 hover:opacity-100 transition-opacity">
+            </a>
+            <p>&copy; 2024 ABAPlay. Todos os direitos reservados.</p>
+            <p class="text-sm mt-1">Definindo o futuro do desenvolvimento infantil, uma clínica de excelência por vez.</p>
+        </div>
+    </footer>
+
+    <!-- ===== VIDEO MODAL ===== -->
+    <div x-show="isVideoOpen" x-cloak class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div @click.outside="isVideoOpen = false" class="relative w-full max-w-4xl bg-black rounded-lg shadow-lg">
+            <div class="aspect-w-16">
+                <iframe :src="isVideoOpen ? 'https://www.youtube.com/embed/iJE6QhVqx9M?autoplay=1&rel=0' : ''" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full rounded-lg"></iframe>
+            </div>
+            <button @click="isVideoOpen = false" class="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full text-brand-dark flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- ===== CHAT MODAL ===== -->
+    <div x-show="isChatOpen" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div @click.outside="isChatOpen = false" x-show="isChatOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="relative w-full max-w-lg h-[70vh] max-h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            <div class="flex-shrink-0 bg-brand-dark text-white p-4 flex justify-between items-center border-b border-brand-stroke">
+                <h3 class="font-heading text-xl font-bold">Especialista Virtual ABAPlay</h3>
+                <button @click="isChatOpen = false" class="text-gray-400 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <div class="flex-grow p-6 overflow-y-auto chat-messages-container space-y-4">
+                <div class="flex items-start gap-3">
+                    <div class="bg-brand-dark text-white p-2 rounded-full flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" /></svg>
+                    </div>
+                    <div class="bg-gray-100 text-gray-800 p-3 rounded-lg rounded-tl-none max-w-sm">
+                        <p class="text-sm">Olá! Sou o assistente virtual da ABAPlay, pronto para ajudar. Para começarmos, qual o seu nome e o da sua clínica?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-shrink-0 bg-white p-4 border-t border-gray-200">
+                <div class="flex items-center gap-2">
+                    <input type="text" placeholder="Digite sua mensagem aqui..." class="w-full px-4 py-2 bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-accent transition">
+                    <button class="chat-send-btn bg-brand-accent text-white rounded-full p-3 hover:bg-brand-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent transition-all transform hover:scale-105">
+                        <span class="icon-send">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" /></svg>
+                        </span>
+                        <span class="icon-loading">
+                            <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/chat.js" defer></script>
+</body>
+</html>

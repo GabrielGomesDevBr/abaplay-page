@@ -1,0 +1,5 @@
+# Ignora o arquivo que contém as variáveis de ambiente
+.env
+
+# Ignora dependências de projetos Node.js (que usaremos para o backend)
+node_modules/
