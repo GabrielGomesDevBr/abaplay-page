@@ -76,7 +76,7 @@ async function processConversationAndNotify(conversationHistory, type) {
 
     try {
         const analysisCompletion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: "gpt-4.1-nano",
             messages: [{ role: "user", content: analysisPrompt }],
             response_format: { type: "json_object" },
         });
