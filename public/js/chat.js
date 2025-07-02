@@ -1,7 +1,6 @@
 /**
  * chat.js
- * Versão final com a nova estratégia de WhatsApp.
- * ADICIONADO: Lógica para transformar links Markdown em HTML clicável.
+ * VERSÃO FINAL: Lógica para renderizar quebras de linha e links Markdown.
  */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -27,25 +26,31 @@ document.addEventListener('DOMContentLoaded', () => {
     let isConversationConcluded = false;
 
     /**
-     * Função auxiliar para converter links em formato Markdown para tags <a> HTML.
-     * @param {string} text - O texto que pode conter links Markdown.
-     * @returns {string} - O texto com os links convertidos para HTML.
+     * Função auxiliar para converter o texto da IA em HTML formatado.
+     * @param {string} text - O texto que pode conter quebras de linha e links Markdown.
+     * @returns {string} - O texto com a formatação convertida para HTML.
      */
-    const parseMarkdownLinks = (text) => {
+    const parseAssistantText = (text) => {
+        // 1. Escapa HTML para evitar injeção de XSS, exceto o que vamos criar.
+        const escapedText = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        // 2. Converte quebras de linha \n para <br>
+        const withLineBreaks = escapedText.replace(/\n/g, '<br>');
+
+        // 3. Converte links em formato Markdown para tags <a> HTML
         const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
         const htmlLink = '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-brand-accent font-bold hover:underline">$1</a>';
-        return text.replace(markdownLinkRegex, htmlLink);
+        
+        return withLineBreaks.replace(markdownLinkRegex, htmlLink);
     };
 
     const addMessage = (text, sender) => {
         let messageHtml;
         if (sender === 'user') {
-            // Mensagens do usuário não precisam de parse, mas mantemos a estrutura.
             messageHtml = `<div class="flex items-start gap-3 justify-end"><div class="bg-brand-accent text-white p-3 rounded-lg rounded-tr-none max-w-sm"><p class="text-sm">${text}</p></div></div>`;
         } else {
-            // --- AQUI ACONTECE A MÁGICA ---
-            // Converte o texto da IA (que pode ter um link) para HTML.
-            const parsedText = parseMarkdownLinks(text);
+            // Converte o texto da IA (que pode ter formatação) para HTML.
+            const parsedText = parseAssistantText(text);
             messageHtml = `<div class="flex items-start gap-3"><div class="bg-brand-dark text-white p-2 rounded-full flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" /></svg></div><div class="bg-gray-100 text-gray-800 p-3 rounded-lg rounded-tl-none max-w-sm"><p class="text-sm">${parsedText}</p></div></div>`;
         }
         messagesContainer.insertAdjacentHTML('beforeend', messageHtml);
@@ -81,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             let botReply = data.reply;
 
-            // Verifica se a conversa foi concluída para desativar o relatório de abandono.
             if (botReply.includes('[WHATSAPP_TRANSFER]') || botReply.includes('[CONVERSA_FINALIZADA]')) {
                 isConversationConcluded = true;
                 console.log('[DEBUG] Conversation marked as concluded. Abandonment report will be disabled.');

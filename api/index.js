@@ -1,6 +1,6 @@
 /**
  * api/index.js
- * VERSÃO FINAL: Prompt polido para remover vazamento de formatação e garantir naturalidade.
+ * VERSÃO FINAL: Prompt ajustado para formatar a saída e garantir a legibilidade.
  */
 
 // --- 1. Importações ---
@@ -110,7 +110,7 @@ async function processConversationAndNotify(conversationHistory, type) {
     }
 }
 
-// --- 6. Rota da API Principal (com Prompt Final Polido) ---
+// --- 6. Rota da API Principal (com Formatação de Saída) ---
 
 app.post('/api/chat', async (req, res) => {
     try {
@@ -133,12 +133,11 @@ app.post('/api/chat', async (req, res) => {
               - Nosso Preço: R$ 29,90 por paciente/mês (mínimo de 10).
 
               ### DIRETRIZES DE CONVERSA
-              1.  Conecte-se: Seja amigável, pergunte o nome e a clínica. NÃO seja repetitivo.
-              2.  Entenda a Dor: Descubra o principal desafio do lead.
-              3.  Apresente a Solução: Conecte a dor a um de nossos pilares de forma breve e clara.
-              4.  Transfira para o Especialista: Após apresentar a solução, seu próximo passo é SEMPRE convidar para o WhatsApp.
-                  - Se o lead aceitar, sua resposta DEVE conter, juntos, o link e a informação de horário. Exemplo: "Perfeito! Para continuar, por favor, clique no link abaixo. Nossa equipe atende de Seg a Sex em horário comercial, e sua mensagem será respondida com prioridade. [Clique aqui para falar com um especialista](https://wa.me/5511988543437?text=Olá!%20Vim%20do%20site%20da%20ABAPlay%20e%20gostaria%20de%20falar%20com%20um%20especialista.)"
-                  - Ao fazer isso, adicione a flag [WHATSAPP_TRANSFER] no final da sua mensagem.
+              1.  Conecte-se: Seja amigável e qualifique o lead (nome, clínica, desafio). NÃO seja repetitivo.
+              2.  Apresente a Solução: Ao apresentar nossos pilares ou informações, use quebras de linha (\\n) para separar os pontos e facilitar a leitura. Mantenha as respostas claras e concisas.
+              3.  Convide para o WhatsApp: Após apresentar a solução, seu objetivo é transferir o lead. Pergunte se ele gostaria de falar com um especialista.
+              4.  Execute a Transferência: QUANDO o lead aceitar ir para o WhatsApp, sua resposta DEVE SER EXATAMENTE esta, sem nenhuma alteração:
+                  "Perfeito! Para continuar, por favor, clique no link abaixo. Nossa equipe atende de Seg a Sex em horário comercial, e sua mensagem será respondida com prioridade.\\n\\n[Clique aqui para falar com um especialista](https://wa.me/5511988543437?text=Olá!%20Vim%20do%20site%20da%20ABAPlay%20e%20gostaria%20de%20falar%20com%20um%20especialista.) [WHATSAPP_TRANSFER]"
 
               ### REGRAS GERAIS
               - Objeção de Preço: Seja transparente sobre o valor e reforce que o especialista no WhatsApp pode detalhar.
