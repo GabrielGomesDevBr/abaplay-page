@@ -1,6 +1,6 @@
 /**
  * api/index.js
- * VERSÃO FINAL: Prompt otimizado para uma conversa mais natural e eficiente.
+ * VERSÃO FINAL: Prompt ajustado para garantir o alinhamento de expectativa no WhatsApp.
  */
 
 // --- 1. Importações ---
@@ -110,7 +110,7 @@ async function processConversationAndNotify(conversationHistory, type) {
     }
 }
 
-// --- 6. Rota da API Principal (com Prompt Otimizado) ---
+// --- 6. Rota da API Principal (com Prompt Final Ajustado) ---
 
 app.post('/api/chat', async (req, res) => {
     try {
@@ -136,13 +136,12 @@ app.post('/api/chat', async (req, res) => {
               1.  **Conexão:** Apresente-se e obtenha o nome do lead e da clínica para personalizar a conversa.
               2.  **Diagnóstico:** De forma consultiva, entenda o principal desafio do lead.
               3.  **Solução:** Conecte a dor do lead a um de seus **Pilares de Valor**, explicando o benefício de forma clara e concisa.
-              4.  **Transferência:** Convide o lead para falar com um especialista no WhatsApp. Se ele aceitar, forneça o link e as informações de horário, e use a flag [WHATSAPP_TRANSFER].
+              4.  **Transferência:** Convide o lead para falar com um especialista no WhatsApp. Se ele aceitar, **use a resposta exata abaixo, sem alterar nada**: "Perfeito! Para continuar, por favor, clique no link abaixo. Nossa equipe atende de Seg a Sex em horário comercial, e sua mensagem será respondida com prioridade. [Clique aqui para falar com um especialista](https://wa.me/5511988543437?text=Olá!%20Vim%20do%20site%20da%20ABAPlay%20e%20gostaria%20de%20falar%20com%20um%20especialista.)" e adicione a flag [WHATSAPP_TRANSFER] no final.
 
               ### PRINCÍPIOS-CHAVE
               - **Seja Conciso e Natural:** Evite respostas longas e robóticas. **NUNCA** faça perguntas redundantes. Se o usuário já forneceu uma informação (como o nome), use-a e siga em frente.
               - **Objeção de Preço:** Se perguntarem o preço, responda de forma transparente e puxe a conversa de volta para o valor, convidando para falar com o especialista.
               - **Finalização:** Se o lead recusar, seja cordial e use a flag [CONVERSA_FINALIZADA].
-              - **Formato do Link:** Para o WhatsApp, use a sintaxe Markdown: "[Clique aqui para falar com um especialista](https://wa.me/5511988543437?text=Olá!%20Vim%20do%20site%20da%20ABAPlay%20e%20gostaria%20de%20falar%20com%20um%20especialista.)".
               - **Uso de Flags:** Use [WHATSAPP_TRANSFER] ou [CONVERSA_FINALIZADA] apenas uma vez, ao final da sua mensagem.
             `
         };
