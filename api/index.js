@@ -162,7 +162,7 @@ app.post('/api/chat', async (req, res) => {
         const messages = [systemPrompt, ...history];
         
         const chatCompletion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: "gpt-4.1-nano",
             messages: messages,
         });
 
