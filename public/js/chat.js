@@ -1,7 +1,7 @@
 /**
  * chat.js
- * Versão final e corrigida. Usa classes CSS para controlar o estado do botão,
- * garantindo que o evento de clique nunca seja perdido.
+ * Versão final e corrigida. Usa classes CSS para controlar o estado do botão.
+ * ADICIONADO: Lógica para detectar o abandono da página e notificar o backend.
  */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const messagesContainer = document.querySelector('.chat-messages-container');
     const chatInput = document.querySelector('.p-4 input[type="text"]');
-    const sendButton = document.querySelector('.chat-send-btn'); // Seletor mais específico
+    const sendButton = document.querySelector('.chat-send-btn');
 
     if (!messagesContainer || !chatInput || !sendButton) {
         console.error("[DEBUG] Um ou mais elementos do chat não foram encontrados.");
@@ -17,12 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     console.log('[DEBUG] Chat elements selected successfully.');
 
+    // Histórico inicial da conversa
     let conversationHistory = [
         {
             role: 'assistant',
             content: 'Olá! Sou o assistente virtual da ABAPlay, pronto para ajudar. Para começarmos, qual o seu nome e o da sua clínica?'
         }
     ];
+
+    // --- NOVA VARIÁVEL ---
+    // Flag para controlar se a conversa já foi concluída (com sucesso ou não).
+    // Isso evita que o evento 'beforeunload' envie um relatório desnecessário.
+    let isConversationConcluded = false;
 
     const addMessage = (text, sender) => {
         let messageElement;
@@ -38,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleSendMessage = async () => {
         const messageText = chatInput.value.trim();
         if (!messageText || sendButton.classList.contains('is-loading')) {
-             // Impede envios múltiplos se já estiver carregando
             return;
         }
 
@@ -48,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chatInput.value = '';
         chatInput.focus();
 
-        // Ativa o estado de 'carregando' usando classes CSS
         sendButton.disabled = true;
         sendButton.classList.add('is-loading');
         console.log('[DEBUG] Button state set to LOADING.');
@@ -68,7 +72,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
-            const botReply = data.reply;
+            let botReply = data.reply;
+
+            // --- LÓGICA DA FLAG DE CONCLUSÃO ---
+            // Verifica se a resposta contém as flags de conclusão.
+            if (botReply.includes('[AGENDAMENTO_CONFIRMADO]') || botReply.includes('[CONVERSA_FINALIZADA]')) {
+                isConversationConcluded = true;
+                console.log('[DEBUG] Conversation marked as concluded. Abandonment report will be disabled.');
+                // Remove as flags da resposta antes de exibir (já feito no backend, mas garantimos aqui também)
+                botReply = botReply.replace('[AGENDAMENTO_CONFIRMADO]', '').replace('[CONVERSA_FINALIZADA]', '').trim();
+            }
             
             addMessage(botReply, 'assistant');
             conversationHistory.push({ role: 'assistant', content: botReply });
@@ -77,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("[DEBUG] CRITICAL: An error occurred during the fetch.", error);
             addMessage("Desculpe, ocorreu um erro de comunicação. Nossa equipe foi notificada.", 'assistant');
         } finally {
-            // Restaura o botão ao seu estado original usando classes CSS
             sendButton.disabled = false;
             sendButton.classList.remove('is-loading');
             console.log('[DEBUG] Button state restored to original in finally block.');
@@ -88,6 +100,23 @@ document.addEventListener('DOMContentLoaded', () => {
     chatInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
             handleSendMessage();
+        }
+    });
+
+    // --- NOVA LÓGICA DE DETECÇÃO DE ABANDONO ---
+    window.addEventListener('beforeunload', (event) => {
+        // Condições para enviar o relatório:
+        // 1. A conversa NÃO pode ter sido marcada como concluída.
+        // 2. O histórico deve ter mais de uma mensagem (a inicial do bot).
+        if (!isConversationConcluded && conversationHistory.length > 1) {
+            console.log('[DEBUG] Unload event triggered. Sending abandonment report.');
+            
+            // Usamos navigator.sendBeacon para garantir o envio dos dados.
+            // Ele é projetado para funcionar mesmo quando a página está sendo descarregada.
+            const data = JSON.stringify(conversationHistory);
+            navigator.sendBeacon('/api/notify-abandoned', data);
+        } else {
+            console.log('[DEBUG] Unload event triggered, but no report sent (conversation was concluded or empty).');
         }
     });
 });
