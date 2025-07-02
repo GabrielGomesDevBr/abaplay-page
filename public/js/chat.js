@@ -1,7 +1,7 @@
 /**
  * chat.js
- * Versão final e corrigida. Usa classes CSS para controlar o estado do botão.
- * ADICIONADO: Lógica para detectar o abandono da página e notificar o backend.
+ * Versão final com a nova estratégia de WhatsApp.
+ * ADICIONADO: Lógica para transformar links Markdown em HTML clicável.
  */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     console.log('[DEBUG] Chat elements selected successfully.');
 
-    // Histórico inicial da conversa
     let conversationHistory = [
         {
             role: 'assistant',
@@ -25,19 +24,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    // --- NOVA VARIÁVEL ---
-    // Flag para controlar se a conversa já foi concluída (com sucesso ou não).
-    // Isso evita que o evento 'beforeunload' envie um relatório desnecessário.
     let isConversationConcluded = false;
 
+    /**
+     * Função auxiliar para converter links em formato Markdown para tags <a> HTML.
+     * @param {string} text - O texto que pode conter links Markdown.
+     * @returns {string} - O texto com os links convertidos para HTML.
+     */
+    const parseMarkdownLinks = (text) => {
+        const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+        const htmlLink = '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-brand-accent font-bold hover:underline">$1</a>';
+        return text.replace(markdownLinkRegex, htmlLink);
+    };
+
     const addMessage = (text, sender) => {
-        let messageElement;
+        let messageHtml;
         if (sender === 'user') {
-            messageElement = `<div class="flex items-start gap-3 justify-end"><div class="bg-brand-accent text-white p-3 rounded-lg rounded-tr-none max-w-sm"><p class="text-sm">${text}</p></div></div>`;
+            // Mensagens do usuário não precisam de parse, mas mantemos a estrutura.
+            messageHtml = `<div class="flex items-start gap-3 justify-end"><div class="bg-brand-accent text-white p-3 rounded-lg rounded-tr-none max-w-sm"><p class="text-sm">${text}</p></div></div>`;
         } else {
-            messageElement = `<div class="flex items-start gap-3"><div class="bg-brand-dark text-white p-2 rounded-full flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" /></svg></div><div class="bg-gray-100 text-gray-800 p-3 rounded-lg rounded-tl-none max-w-sm"><p class="text-sm">${text}</p></div></div>`;
+            // --- AQUI ACONTECE A MÁGICA ---
+            // Converte o texto da IA (que pode ter um link) para HTML.
+            const parsedText = parseMarkdownLinks(text);
+            messageHtml = `<div class="flex items-start gap-3"><div class="bg-brand-dark text-white p-2 rounded-full flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" /></svg></div><div class="bg-gray-100 text-gray-800 p-3 rounded-lg rounded-tl-none max-w-sm"><p class="text-sm">${parsedText}</p></div></div>`;
         }
-        messagesContainer.insertAdjacentHTML('beforeend', messageElement);
+        messagesContainer.insertAdjacentHTML('beforeend', messageHtml);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     };
     
@@ -55,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         sendButton.disabled = true;
         sendButton.classList.add('is-loading');
-        console.log('[DEBUG] Button state set to LOADING.');
 
         try {
             const response = await fetch('/api/chat', {
@@ -64,23 +74,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ history: conversationHistory }),
             });
 
-            console.log(`[DEBUG] API response received. Status: ${response.status}`);
-
             if (!response.ok) {
-                const errorBody = await response.text();
-                throw new Error(`API Error ${response.status}: ${response.statusText}. Body: ${errorBody}`);
+                throw new Error(`API Error ${response.status}`);
             }
 
             const data = await response.json();
             let botReply = data.reply;
 
-            // --- LÓGICA DA FLAG DE CONCLUSÃO ---
-            // Verifica se a resposta contém as flags de conclusão.
-            if (botReply.includes('[AGENDAMENTO_CONFIRMADO]') || botReply.includes('[CONVERSA_FINALIZADA]')) {
+            // Verifica se a conversa foi concluída para desativar o relatório de abandono.
+            if (botReply.includes('[WHATSAPP_TRANSFER]') || botReply.includes('[CONVERSA_FINALIZADA]')) {
                 isConversationConcluded = true;
                 console.log('[DEBUG] Conversation marked as concluded. Abandonment report will be disabled.');
-                // Remove as flags da resposta antes de exibir (já feito no backend, mas garantimos aqui também)
-                botReply = botReply.replace('[AGENDAMENTO_CONFIRMADO]', '').replace('[CONVERSA_FINALIZADA]', '').trim();
             }
             
             addMessage(botReply, 'assistant');
@@ -92,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             sendButton.disabled = false;
             sendButton.classList.remove('is-loading');
-            console.log('[DEBUG] Button state restored to original in finally block.');
         }
     };
 
@@ -103,16 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- NOVA LÓGICA DE DETECÇÃO DE ABANDONO ---
-    window.addEventListener('beforeunload', (event) => {
-        // Condições para enviar o relatório:
-        // 1. A conversa NÃO pode ter sido marcada como concluída.
-        // 2. O histórico deve ter mais de uma mensagem (a inicial do bot).
+    window.addEventListener('beforeunload', () => {
         if (!isConversationConcluded && conversationHistory.length > 1) {
             console.log('[DEBUG] Unload event triggered. Sending abandonment report.');
-            
-            // Usamos navigator.sendBeacon para garantir o envio dos dados.
-            // Ele é projetado para funcionar mesmo quando a página está sendo descarregada.
             const data = JSON.stringify(conversationHistory);
             navigator.sendBeacon('/api/notify-abandoned', data);
         } else {

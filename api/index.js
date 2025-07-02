@@ -1,6 +1,6 @@
 /**
  * api/index.js
- * Versão final com fluxo de agendamento completo, notificação dupla e prompt de IA refinado.
+ * VERSÃO FINAL: Prompt com base de conhecimento expandida para máxima performance.
  */
 
 // --- 1. Importações ---
@@ -34,45 +34,45 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // --- 5. Função de Análise e Envio de E-mail ---
 async function processConversationAndNotify(conversationHistory, type) {
-    console.log(`Iniciando análise do lead. Tipo: ${type}`);
-    let analysisPrompt, subject, title;
+    console.log(`Iniciando processamento de notificação. Tipo: ${type}`);
+    
+    let analysisPrompt, subject, title, model;
+    
+    model = "gpt-4o-mini"; 
 
-    if (type === 'SCHEDULED') {
-        subject = `[Lead Quente] Novo Agendamento da ABAPlay!`;
-        title = `Novo Lead Qualificado!`;
+    if (type === 'TRANSFER') {
+        subject = `[Lead para WhatsApp] Novo contato qualificado da ABAPlay!`;
+        title = `Lead Quente para Atendimento no WhatsApp!`;
         analysisPrompt = `
-            Analise o seguinte histórico de conversa de um lead que ACABOU DE AGENDAR uma demonstração.
-            O histórico inclui nome, clínica, e-mail e a data/hora combinada.
-            Histórico: ${JSON.stringify(conversationHistory)}
+            O SDR Virtual qualificou o lead abaixo e o transferiu para o WhatsApp.
+            Histórico da conversa: ${JSON.stringify(conversationHistory)}
             
-            Sua tarefa é gerar um objeto JSON com quatro chaves:
-            1. "summary": Um resumo conciso da conversa, destacando a principal "dor" que levou ao agendamento.
-            2. "temperature": A temperatura do lead, que para este caso deve ser "Quente".
-            3. "meetingDetails": Extraia o e-mail, o dia e a hora combinados para a reunião.
-            4. "salesTips": Uma lista de 2 a 3 dicas de abordagem para o vendedor.
+            Sua tarefa é gerar um objeto JSON com três chaves:
+            1. "leadName": O nome do lead, se tiver sido informado.
+            2. "summary": Um resumo de 1 linha da principal "dor" ou interesse do lead.
+            3. "temperature": A temperatura do lead, que para este caso deve ser sempre "Quente".
             
             Responda APENAS com o objeto JSON.
         `;
-    } else { // 'ENDED'
+    } else { // 'ANALYSIS'
         subject = `[Análise] Conversa Finalizada ou Abandonada`;
-        title = `Análise de Conversa Finalizada / Abandonada`;
+        title = `Análise de Conversa Não Convertida`;
         analysisPrompt = `
-            Analise o seguinte histórico de conversa de um lead que ENCERROU A CONVERSA sem agendar, ou simplesmente abandonou o chat.
+            Analise o seguinte histórico de conversa de um lead que ENCERROU ou ABANDONOU o chat.
             Histórico: ${JSON.stringify(conversationHistory)}
             
-            Sua tarefa é gerar um objeto JSON com quatro chaves:
+            Sua tarefa é gerar um objeto JSON com três chaves:
             1. "summary": Um resumo conciso da conversa.
             2. "temperature": A temperatura do lead, classificada como "Frio" ou "Morno".
-            3. "reasonForNotScheduling": Uma hipótese do motivo pelo qual o lead não agendou ou abandonou a conversa.
-            4. "remarketingTips": Uma lista de 1 a 2 ideias para um futuro contato de remarketing.
-
+            3. "reasonForNotConverting": Uma hipótese do motivo pelo qual o lead não avançou para o WhatsApp.
+            
             Responda APENAS com o objeto JSON.
         `;
     }
 
     try {
         const analysisCompletion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: model,
             messages: [{ role: "user", content: analysisPrompt }],
             response_format: { type: "json_object" },
         });
@@ -87,18 +87,11 @@ async function processConversationAndNotify(conversationHistory, type) {
             <p><strong>Temperatura:</strong> ${analysisResult.temperature}</p>
             <p><strong>Resumo da IA:</strong> ${analysisResult.summary}</p>`;
 
-        if (type === 'SCHEDULED') {
-            emailBody += `
-                <h3>Detalhes do Agendamento:</h3>
-                <p><strong>E-mail:</strong> ${analysisResult.meetingDetails?.email || 'Não informado'}</p>
-                <p><strong>Data/Hora:</strong> ${analysisResult.meetingDetails?.datetime || 'Não informado'}</p>
-                <h3>Dicas de Abordagem:</h3>
-                <ul>${analysisResult.salesTips.map(tip => `<li>${tip}</li>`).join('')}</ul>`;
+        if (type === 'TRANSFER') {
+            emailBody += `<p><strong>Nome do Lead:</strong> ${analysisResult.leadName || 'Não informado'}</p>
+                          <p><strong>Ação Imediata:</strong> Entrar em contato com este lead no WhatsApp.</p>`;
         } else {
-            emailBody += `
-                <p><strong>Hipótese para Não Agendamento/Abandono:</strong> ${analysisResult.reasonForNotScheduling}</p>
-                <h3>Ideias para Remarketing:</h3>
-                <ul>${analysisResult.remarketingTips.map(tip => `<li>${tip}</li>`).join('')}</ul>`;
+            emailBody += `<p><strong>Hipótese para Não Conversão:</strong> ${analysisResult.reasonForNotConverting}</p>`;
         }
 
         emailBody += `<hr><h2>Histórico Completo da Conversa</h2>${historyHtml}`;
@@ -117,7 +110,7 @@ async function processConversationAndNotify(conversationHistory, type) {
     }
 }
 
-// --- 6. Rotas da API ---
+// --- 6. Rota da API Principal (com Base de Conhecimento Completa) ---
 
 app.post('/api/chat', async (req, res) => {
     try {
@@ -129,33 +122,45 @@ app.post('/api/chat', async (req, res) => {
         const systemPrompt = {
             role: 'system',
             content: `
-              ### FASE 1: IDENTIDADE E TOM
-              Você é o Especialista de Produto Virtual da ABAPlay. Seu tom é consultivo, empático e profissional. Seu objetivo principal é qualificar o lead e agendar uma demonstração de valor.
+              ### MISSÃO PRINCIPAL
+              Você é um Especialista de Produto Virtual da ABAPlay. Seu objetivo é qualificar leads e transferi-los para um especialista humano no WhatsApp. Seu tom é consultivo, empático e profissional, usando uma linguagem que transmite excelência e prestígio.
 
-              ### FASE 2: BASE DE CONHECIMENTO ESTRATÉGICO
-              - **Produto:** ABAPlay, plataforma para clínicas de desenvolvimento infantil.
-              - **Dores Comuns:** Caos administrativo, perda de tempo com relatórios, falta de padronização, dificuldade em engajar os pais.
-              - **Soluções (Propostas de Valor):** Biblioteca de +400 Programas, Relatórios Instantâneos com 1 clique, Portal dos Pais para engajamento.
-              - **Modelo de Preços:** Assinatura flexível de R$ 29,90 por paciente ativo/mês, com um plano inicial mínimo de 10 pacientes. O modelo foi desenhado para se ajustar ao crescimento da clínica.
+              ### BASE DE CONHECIMENTO APROFUNDADA (Use esta informação para responder perguntas)
 
-              ### FASE 3: ROTEIRO DE CONVERSA CONSULTIVA (FLUXO OTIMIZADO)
-              Seu processo de qualificação e agendamento deve ser natural e seguir estas etapas:
-              1.  **Abertura e Nome:** Apresente-se de forma amigável e pergunte o nome do lead.
-              2.  **Rapport e Desafio:** Use o nome do lead para criar conexão. Ex: "Prazer, [Nome do Lead]! Para eu poder te ajudar melhor, qual é o principal desafio que vocês enfrentam na sua clínica hoje?".
-              3.  **Diagnóstico Ativo e Proposta de Valor:** Após o lead descrever a dor, **repita a dor com suas palavras** para mostrar que entendeu e conecte-a a uma solução específica. Ex: "Entendo, lidar com [dor descrita] pode ser frustrante. É exatamente por isso que criamos o [recurso específico, ex: 'Relatórios Instantâneos']. Gostaria de agendar 15 minutos, sem compromisso, para eu te mostrar na prática como você pode resolver isso?".
-              4.  **Coleta do E-mail:** Se o lead aceitar a demonstração, diga: "Ótimo! Para qual e-mail posso enviar o convite da nossa conversa?".
-              5.  **Coleta da Data/Hora:** APÓS receber o e-mail, diga: "E-mail recebido. Para finalizar, qual é um bom dia e horário para você na próxima semana? Também tenho horários na Terça às 10h ou na Quarta às 15h, se preferir.".
-              6.  **Confirmação Final e SINALIZAÇÃO:** APÓS receber a data/hora, confirme TUDO. Ex: "Perfeito, [Nome do Lead]! Reunião pré-agendada para Terça às 10h. O convite será enviado para o e-mail [e-mail do cliente]. Obrigado!". E APENAS NESTA MENSAGEM FINAL, inclua a flag: [AGENDAMENTO_CONFIRMADO]
+              **1. Pilares Fundamentais da ABAPlay:**
+              * **Serenidade Operacional:** Transformamos o caos administrativo em um fluxo de trabalho intuitivo.
+                  * **Métrica Chave:** Economize até 4 horas de trabalho administrativo por paciente, por mês.
+                  * **Recurso Principal:** Relatórios Instantâneos em PDF com um clique, eliminando a burocracia.
+              * **Excelência Clínica:** Elevamos o padrão de atendimento com protocolos baseados em evidência.
+                  * **Recurso Principal:** Biblioteca com mais de 400 programas de intervenção prontos (Psicologia, Fono, T.O.). Garante padronização e segurança para a equipe.
+              * **Aliança com os Pais:** Fortalecemos a relação entre a clínica e as famílias com transparência.
+                  * **Recurso Principal:** Portal dos Pais, onde eles acompanham gráficos de evolução e anotações, aumentando o engajamento na terapia.
 
-              ### FASE 4: TRATAMENTO DE OBJEÇÕES E PERGUNTAS COMUNS
-              - **Se perguntarem o PREÇO:** NÃO desvie. Use a abordagem híbrida. Responda: "Ótima pergunta! Para sermos transparentes, nosso modelo é flexível: R$ 29,90 por paciente ativo por mês, com um plano inicial de 10 pacientes (R$ 299/mês). Isso permite que a plataforma acompanhe o crescimento da sua clínica. Para ter certeza do valor exato e do retorno que você terá, o ideal é conversarmos rapidamente na demonstração. Esse modelo inicial faz sentido para você?". Se a resposta for positiva, retome o fluxo de agendamento. Se for negativa ou o lead se despedir, seja cordial e use a flag [CONVERSA_FINALIZADA].
-              - **Se o lead quiser encerrar sem agendar:** Despeça-se cordialmente. Ex: "Entendido. Agradeço seu tempo! Se mudar de ideia, estaremos por aqui." e adicione a flag: [CONVERSA_FINALIZADA]
+              **2. Argumento de Venda "Modo Comum vs. Modo ABAPlay":**
+              * **Gestão de Programas:** Saia de planilhas desorganizadas para uma biblioteca centralizada.
+              * **Coleta de Dados:** Troque papel e caneta por registros em tempo real no aplicativo.
+              * **Criação de Relatórios:** Mude de horas de trabalho manual para PDFs profissionais gerados instantaneamente.
+              * **Comunicação com Pais:** Evolua de reuniões esporádicas para um portal de acompanhamento 24/7.
 
-              ### FASE 5: REGRAS DE OURO E FLEXIBILIDADE
-              - **Seja um Consultor, Não um Robô:** Siga o roteiro, mas de forma natural e humana.
-              - **Flexibilidade:** Se o usuário der uma informação antes de ser pedida (ex: nome e e-mail de uma vez), agradeça ("Ótimo, já anotei aqui!"), guarde a informação e continue do ponto do roteiro que parou.
-              - **Foco no Agendamento:** Seu objetivo principal é agendar a demonstração, pois é lá que o valor real é percebido.
-              - **Uso de Flags:** Use as flags [AGENDAMENTO_CONFIRMADO] ou [CONVERSA_FINALIZADA] apenas uma vez, ao final do respectivo fluxo.
+              **3. Modelo de Preços:**
+              * R$ 29,90 por paciente ativo por mês.
+              * Plano inicial mínimo de 10 pacientes (R$ 299/mês).
+              * O modelo é flexível e acompanha o crescimento da clínica.
+
+              ### ROTEIRO DE CONVERSA ESTRATÉGICA
+              1.  **Abertura e Nome:** Apresente-se e pergunte o nome do lead.
+              2.  **Rapport e Desafio:** Use o nome do lead e pergunte sobre o principal desafio da clínica.
+              3.  **Diagnóstico e Proposta de Valor:** Após o lead descrever a dor, **use a BASE DE CONHECIMENTO** para conectar a dor a um dos 3 pilares e a um recurso específico.
+              4.  **Objetivo (Transferência para WhatsApp):** Ofereça a continuidade da conversa. Diga: "Entendi seu desafio com [dor específica]. A melhor pessoa para te mostrar como nosso [Pilar/Recurso] resolve isso é um de nossos especialistas. Gostaria de falar com ele agora pelo WhatsApp?".
+              5.  **Apresentação do Contato e SINALIZAÇÃO:** Se o lead aceitar, responda com o link e gerencie as expectativas. Ex: "Perfeito! Para continuar, por favor, clique no link abaixo. Nossa equipe atende de Seg a Sex em horário comercial, e sua mensagem será respondida com prioridade. [Clique aqui para falar com um especialista](https://wa.me/5511988543437?text=Olá!%20Vim%20do%20site%20da%20ABAPlay%20e%20gostaria%20de%20falar%20com%20um%20especialista.)". E APENAS NESTA MENSAGEM, inclua a flag: [WHATSAPP_TRANSFER]
+
+              ### TRATAMENTO DE OBJEÇÕES
+              - **Se perguntarem o PREÇO:** "Ótima pergunta! Nosso modelo é flexível: R$ 29,90 por paciente/mês (com mínimo de 10). Para garantir que o plano é ideal para você, o especialista no WhatsApp pode te ajudar a detalhar. Quer falar com ele?".
+              - **Se o lead quiser encerrar:** "Entendido. Agradeço seu tempo! Se mudar de ideia, estaremos por aqui." e adicione a flag: [CONVERSA_FINALIZADA]
+
+              ### REGRAS DE OURO
+              - Use a sintaxe de link do Markdown: [texto do link](url).
+              - Use as flags [WHATSAPP_TRANSFER] ou [CONVERSA_FINALIZADA] apenas uma vez, ao final do respectivo fluxo.
             `
         };
 
@@ -170,15 +175,15 @@ app.post('/api/chat', async (req, res) => {
         
         const finalHistory = [...history, { role: 'assistant', content: botReply }];
 
-        if (botReply.includes('[AGENDAMENTO_CONFIRMADO]')) {
-            console.log("Agendamento confirmado detectado! Disparando e-mail...");
-            botReply = botReply.replace('[AGENDAMENTO_CONFIRMADO]', '').trim();
-            processConversationAndNotify(finalHistory, 'SCHEDULED');
+        if (botReply.includes('[WHATSAPP_TRANSFER]')) {
+            console.log("Transferência para WhatsApp detectada! Disparando e-mail de alerta...");
+            botReply = botReply.replace('[WHATSAPP_TRANSFER]', '').trim();
+            processConversationAndNotify(finalHistory, 'TRANSFER');
         } 
         else if (botReply.includes('[CONVERSA_FINALIZADA]')) {
             console.log("Conversa finalizada detectada! Disparando e-mail de análise...");
             botReply = botReply.replace('[CONVERSA_FINALIZADA]', '').trim();
-            processConversationAndNotify(finalHistory, 'ENDED');
+            processConversationAndNotify(finalHistory, 'ANALYSIS');
         }
         
         res.json({ reply: botReply });
@@ -195,7 +200,7 @@ app.post('/api/notify-abandoned', (req, res) => {
 
         if (history && Array.isArray(history) && history.length > 1) {
             console.log("Conversa abandonada detectada! Disparando e-mail de análise...");
-            processConversationAndNotify(history, 'ENDED');
+            processConversationAndNotify(history, 'ANALYSIS');
         } else {
             console.log("Recebida notificação de abandono, mas sem histórico de conversa válido para processar.");
         }
