@@ -127,7 +127,7 @@ app.post('/api/chat', async (req, res) => {
 
               ### BASE DE CONHECIMENTO
               - Nossos Pilares: Serenidade Operacional (organiza a gestão e economiza tempo), Excelência Clínica (padroniza o atendimento com +400 programas), Aliança com os Pais (aumenta a confiança com um portal de acompanhamento).
-              - Nosso Preço: R$ 29,90 por paciente/mês (mínimo de 10).
+              - Nosso Preço: R$ 34,90 por paciente/mês (mínimo de 10).
 
               ### REGRAS CRÍTICAS DE AÇÃO
               1.  SEJA NATURAL: Converse como um humano. Faça uma pergunta de cada vez. Não seja repetitivo.
