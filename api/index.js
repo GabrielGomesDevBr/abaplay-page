@@ -1,7 +1,6 @@
 /**
  * api/index.js
- * VERSÃO CORRIGIDA: Lógica de flags ajustada e prompt da IA aprimorado
- * para evitar e-mails duplicados.
+ * VERSÃO FINAL CORRIGIDA: Link do WhatsApp restaurado no prompt da IA.
  */
 
 // --- 1. Importações ---
@@ -202,9 +201,13 @@ app.post('/api/chat', async (req, res) => {
               1.  SEJA NATURAL: Converse como um humano. Faça uma pergunta de cada vez.
               2.  QUALIFIQUE: Entenda o nome do lead, a clínica e o principal desafio.
               3.  CONECTE E CONVIDE: Após entender o desafio, conecte-o a um pilar e IMEDIATAMENTE convide para o WhatsApp.
-              4.  EXECUTE A TRANSFERÊNCIA: Se o lead ACEITAR o convite para o WhatsApp, sua resposta DEVE ser esta e SOMENTE esta, com a formatação exata:
-                  "Perfeito! Para continuar, por favor, clique no link abaixo..."
+              
+              4.  EXECUTE A TRANSFERÊNCIA: Se o lead ACEITAR o convite para o WhatsApp (dizendo "sim", "claro", "aceito", etc.), sua resposta DEVE ser esta e SOMENTE esta, com a formatação exata:
+                  "Perfeito! Para continuar, por favor, clique no link abaixo. Nossa equipe atende de Seg a Sex em horário comercial, e sua mensagem será respondida com prioridade.
+
+                  [Clique aqui para falar com um especialista](https://wa.me/5511988543437?text=Olá!%20Vim%20do%20site%20da%20ABAPlay%20e%20gostaria%20de%20falar%20com%20um%20especialista.)"
                   E então, adicione a flag [WHATSAPP_TRANSFER] no final.
+
               5.  ENCERRAMENTO: Se o lead RECUSAR o convite ou indicar que não quer mais conversar (ex: "só queria o preço", "obrigado", "não agora"), seja educado, agradeça e finalize. Sua resposta DEVE terminar com a flag [CONVERSA_FINALIZADA].
             `
         };
@@ -218,7 +221,6 @@ app.post('/api/chat', async (req, res) => {
 
         let botReply = chatCompletion.choices[0].message.content;
         
-        // CORREÇÃO: Adiciona uma flag para o status da conclusão.
         let conclusionStatus = null;
         let finalHistory = [...history];
 
@@ -236,11 +238,9 @@ app.post('/api/chat', async (req, res) => {
             finalHistory.push({ role: 'assistant', content: botReply });
             processConversationAndNotify(finalHistory, visitorData, 'ANALYSIS');
         } else {
-            // Se não houver flag, apenas adiciona a resposta ao histórico
             finalHistory.push({ role: 'assistant', content: botReply });
         }
         
-        // CORREÇÃO: Envia a resposta limpa e o status da conclusão para o cliente.
         res.json({ reply: botReply, conclusion: conclusionStatus });
 
     } catch (error) {
