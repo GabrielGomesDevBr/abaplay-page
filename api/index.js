@@ -1,6 +1,7 @@
 /**
  * api/index.js
- * VERSÃO FINAL: Prompt simplificado para máxima naturalidade e confiabilidade.
+ * VERSÃO FASE 3: Backend atualizado para receber e processar dados do visitante,
+ * enriquecer o prompt da IA e enviar e-mails de notificação completos.
  */
 
 // --- 1. Importações ---
@@ -29,28 +30,89 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // --- 4. Middlewares ---
 app.use(express.json());
-app.use(express.text({ type: 'text/plain' }));
+// ATUALIZADO: Aumenta o limite do payload para acomodar o histórico e os novos dados.
+app.use(express.text({ type: 'text/plain', limit: '50kb' })); 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// --- 5. Função de Análise e Envio de E-mail ---
-async function processConversationAndNotify(conversationHistory, type) {
+
+// --- 5. Funções Auxiliares ---
+
+/**
+ * NOVO: Cria uma tabela HTML com os dados coletados do visitante.
+ * @param {object} visitorData - O objeto com os dados do visitante.
+ * @returns {string} - Uma string HTML formatada como tabela.
+ */
+function createVisitorDataTable(visitorData) {
+    if (!visitorData) {
+        return '<p>Nenhum dado adicional do visitante foi coletado.</p>';
+    }
+
+    const data = {
+        'Informações Técnicas': {
+            'Dispositivo': visitorData.technical?.device,
+            'Sistema Operacional': visitorData.technical?.os,
+            'Navegador': visitorData.technical?.browser,
+            'Resolução da Tela': visitorData.technical?.screenResolution,
+            'Idioma': visitorData.technical?.language,
+        },
+        'Informações Geográficas': {
+            'Fuso Horário': visitorData.geographical?.timezone,
+            'Status da Localização': visitorData.geographical?.location?.status,
+            'Latitude': visitorData.geographical?.location?.latitude,
+            'Longitude': visitorData.geographical?.location?.longitude,
+        },
+        'Contexto e Comportamento': {
+            'Origem do Tráfego': visitorData.context?.trafficSource,
+            'Página de Acesso': visitorData.context?.landingPage,
+            'Data de Acesso (UTC)': visitorData.context?.accessTimestamp,
+            'Tempo na Página antes do Chat': `${visitorData.behavioral?.timeOnPageBeforeChat || 'N/A'} segundos`,
+            'Profundidade de Rolagem': `${visitorData.behavioral?.scrollDepth || 0}%`,
+        }
+    };
+
+    let html = '<h2>Contexto do Visitante</h2><table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; font-family: sans-serif; border-color: #dee2e6;">';
+
+    for (const category in data) {
+        html += `<tr style="background-color: #f8f9fa;"><th colspan="2" style="text-align: left; padding: 10px;">${category}</th></tr>`;
+        for (const [key, value] of Object.entries(data[category])) {
+            html += `<tr><td style="width: 40%; font-weight: bold;">${key}</td><td>${value || 'Não disponível'}</td></tr>`;
+        }
+    }
+
+    html += '</table>';
+    return html;
+}
+
+/**
+ * ATUALIZADO: Processa a conversa e os dados do visitante para notificar a equipe.
+ * @param {Array} conversationHistory - O histórico da conversa.
+ * @param {object} visitorData - Os dados coletados do visitante.
+ * @param {string} type - O tipo de notificação ('TRANSFER' ou 'ANALYSIS').
+ */
+async function processConversationAndNotify(conversationHistory, visitorData, type) {
     console.log(`Iniciando processamento de notificação. Tipo: ${type}`);
     
-    let analysisPrompt, subject, title, model;
-    
-    model = "gpt-4o-mini"; 
+    let analysisPrompt, subject, title;
+    const model = "gpt-4o-mini"; 
+    const visitorDataContext = JSON.stringify(visitorData, null, 2);
 
     if (type === 'TRANSFER') {
         subject = `[Lead para WhatsApp] Novo contato qualificado da ABAPlay!`;
         title = `Lead Quente para Atendimento no WhatsApp!`;
         analysisPrompt = `
-            O SDR Virtual qualificou o lead abaixo e o transferiu para o WhatsApp.
-            Histórico da conversa: ${JSON.stringify(conversationHistory)}
+            Você é um analista de vendas sênior. Um SDR Virtual qualificou o lead abaixo e o transferiu para o WhatsApp.
             
-            Sua tarefa é gerar um objeto JSON com três chaves:
+            HISTÓRICO DA CONVERSA:
+            ${JSON.stringify(conversationHistory)}
+
+            DADOS DO VISITANTE:
+            ${visitorDataContext}
+            
+            Sua tarefa é gerar um objeto JSON com quatro chaves:
             1. "leadName": O nome do lead, se tiver sido informado.
             2. "summary": Um resumo de 1 linha da principal "dor" ou interesse do lead.
             3. "temperature": A temperatura do lead, que para este caso deve ser sempre "Quente".
+            4. "salesInsight": Uma dica de abordagem curta e acionável para o vendedor, baseada em TODOS os dados (conversa e contexto do visitante). Ex: "Lead veio do Instagram no celular, sugere urgência. Foque no Portal dos Pais."
             
             Responda APENAS com o objeto JSON.
         `;
@@ -58,13 +120,19 @@ async function processConversationAndNotify(conversationHistory, type) {
         subject = `[Análise] Conversa Finalizada ou Abandonada`;
         title = `Análise de Conversa Não Convertida`;
         analysisPrompt = `
-            Analise o seguinte histórico de conversa de um lead que ENCERROU ou ABANDONOU o chat.
-            Histórico: ${JSON.stringify(conversationHistory)}
+            Você é um analista de vendas sênior. Analise o seguinte histórico de conversa de um lead que ENCERROU ou ABANDONOU o chat.
             
-            Sua tarefa é gerar um objeto JSON com três chaves:
+            HISTÓRICO DA CONVERSA:
+            ${JSON.stringify(conversationHistory)}
+
+            DADOS DO VISITANTE:
+            ${visitorDataContext}
+            
+            Sua tarefa é gerar um objeto JSON com quatro chaves:
             1. "summary": Um resumo conciso da conversa.
             2. "temperature": A temperatura do lead, classificada como "Frio" ou "Morno".
-            3. "reasonForNotConverting": Uma hipótese do motivo pelo qual o lead não avançou para o WhatsApp.
+            3. "reasonForNotConverting": Uma hipótese do motivo pelo qual o lead não avançou, baseada na conversa.
+            4. "salesInsight": Uma dica para uma futura abordagem ou uma observação relevante baseada em TODOS os dados (conversa e contexto do visitante).
             
             Responda APENAS com o objeto JSON.
         `;
@@ -80,21 +148,36 @@ async function processConversationAndNotify(conversationHistory, type) {
         const analysisResult = JSON.parse(analysisCompletion.choices[0].message.content);
         
         const historyHtml = conversationHistory.map(msg => 
-            `<p><strong>${msg.role === 'user' ? 'Lead' : 'SDR Virtual'}:</strong> ${msg.content}</p>`
+            `<p style="margin: 5px 0;"><strong>${msg.role === 'user' ? 'Lead' : 'SDR Virtual'}:</strong> ${msg.content}</p>`
         ).join('');
+        
+        // NOVO: Gera a tabela de dados do visitante.
+        const visitorDataHtml = createVisitorDataTable(visitorData);
 
-        let emailBody = `<h1>${title}</h1>
-            <p><strong>Temperatura:</strong> ${analysisResult.temperature}</p>
-            <p><strong>Resumo da IA:</strong> ${analysisResult.summary}</p>`;
+        // ATUALIZADO: Monta o corpo do e-mail com as três seções.
+        let emailBody = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h1 style="color: #0d1117;">${title}</h1>
+                
+                <h2>Análise da IA</h2>
+                <p><strong>Temperatura:</strong> ${analysisResult.temperature || 'N/A'}</p>
+                <p><strong>Resumo:</strong> ${analysisResult.summary || 'N/A'}</p>`;
 
         if (type === 'TRANSFER') {
             emailBody += `<p><strong>Nome do Lead:</strong> ${analysisResult.leadName || 'Não informado'}</p>
+                          <p><strong>Insight para Vendas:</strong> ${analysisResult.salesInsight || 'Nenhum insight gerado.'}</p>
                           <p><strong>Ação Imediata:</strong> Entrar em contato com este lead no WhatsApp.</p>`;
         } else {
-            emailBody += `<p><strong>Hipótese para Não Conversão:</strong> ${analysisResult.reasonForNotConverting}</p>`;
+            emailBody += `<p><strong>Hipótese para Não Conversão:</strong> ${analysisResult.reasonForNotConverting || 'N/A'}</p>
+                          <p><strong>Observação da IA:</strong> ${analysisResult.salesInsight || 'Nenhuma observação gerada.'}</p>`;
         }
 
-        emailBody += `<hr><h2>Histórico Completo da Conversa</h2>${historyHtml}`;
+        emailBody += `<hr style="margin: 20px 0;">
+                      ${visitorDataHtml}
+                      <hr style="margin: 20px 0;">
+                      <h2>Histórico Completo da Conversa</h2>
+                      <div style="background-color: #f1f1f1; padding: 15px; border-radius: 8px;">${historyHtml}</div>
+            </div>`;
         
         await resend.emails.send({
             from: 'onboarding@resend.dev',
@@ -110,11 +193,12 @@ async function processConversationAndNotify(conversationHistory, type) {
     }
 }
 
-// --- 6. Rota da API Principal (com Prompt Final Simplificado) ---
+// --- 6. Rotas da API ---
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { history } = req.body;
+        // ATUALIZADO: Recebe history e visitorData.
+        const { history, visitorData } = req.body;
         if (!history || !Array.isArray(history)) {
             return res.status(400).json({ error: 'O histórico da conversa é obrigatório.' });
         }
@@ -156,12 +240,14 @@ app.post('/api/chat', async (req, res) => {
         if (botReply.includes('[WHATSAPP_TRANSFER]')) {
             console.log("Transferência para WhatsApp detectada! Disparando e-mail de alerta...");
             botReply = botReply.replace('[WHATSAPP_TRANSFER]', '').trim();
-            processConversationAndNotify(finalHistory, 'TRANSFER');
+            // ATUALIZADO: Passa os dados do visitante para a função de notificação.
+            processConversationAndNotify(finalHistory, visitorData, 'TRANSFER');
         } 
         else if (botReply.includes('[CONVERSA_FINALIZADA]')) {
             console.log("Conversa finalizada detectada! Disparando e-mail de análise...");
             botReply = botReply.replace('[CONVERSA_FINALIZADA]', '').trim();
-            processConversationAndNotify(finalHistory, 'ANALYSIS');
+            // ATUALIZADO: Passa os dados do visitante para a função de notificação.
+            processConversationAndNotify(finalHistory, visitorData, 'ANALYSIS');
         }
         
         res.json({ reply: botReply });
@@ -174,11 +260,13 @@ app.post('/api/chat', async (req, res) => {
 
 app.post('/api/notify-abandoned', (req, res) => {
     try {
-        const history = JSON.parse(req.body);
+        // ATUALIZADO: O corpo agora é um objeto JSON.
+        const { history, visitorData } = JSON.parse(req.body);
 
         if (history && Array.isArray(history) && history.length > 1) {
             console.log("Conversa abandonada detectada! Disparando e-mail de análise...");
-            processConversationAndNotify(history, 'ANALYSIS');
+            // ATUALIZADO: Passa os dados do visitante para a função de notificação.
+            processConversationAndNotify(history, visitorData, 'ANALYSIS');
         } else {
             console.log("Recebida notificação de abandono, mas sem histórico de conversa válido para processar.");
         }
@@ -189,7 +277,6 @@ app.post('/api/notify-abandoned', (req, res) => {
         res.status(500).send("Erro ao processar a notificação de abandono.");
     }
 });
-
 
 // --- 7. Inicialização do Servidor ---
 app.listen(PORT, () => {
