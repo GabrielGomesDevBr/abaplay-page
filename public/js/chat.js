@@ -1,6 +1,7 @@
 /**
  * chat.js
- * VERSÃO FASE 2: Integração com o dataCollector.js para enviar dados do visitante.
+ * VERSÃO FINAL CORRIGIDA: Lógica ajustada para ler o status de 'conclusion'
+ * da API e evitar o relatório de abandono em conversas concluídas.
  */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -23,13 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
+    // Esta flag agora será controlada pela resposta da API.
     let isConversationConcluded = false;
 
-    /**
-     * Função auxiliar para converter o texto da IA em HTML formatado.
-     * @param {string} text - O texto que pode conter quebras de linha e links Markdown.
-     * @returns {string} - O texto com a formatação convertida para HTML.
-     */
     const parseAssistantText = (text) => {
         const escapedText = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         const withLineBreaks = escapedText.replace(/\n/g, '<br>');
@@ -50,13 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     };
     
-    /**
-     * NOVO: Função para obter os dados do visitante, incluindo o cálculo do tempo antes do chat.
-     */
     const getVisitorDataPayload = () => {
         if (window.visitorTracker && window.visitorTracker.data) {
-            // Calcula o tempo em segundos desde o carregamento da página até este momento.
-            // Isso só é feito uma vez.
             if (window.visitorTracker.data.behavioral.timeOnPageBeforeChat === null) {
                 const timeNow = Date.now();
                 const timeDiffSeconds = Math.round((timeNow - window.visitorTracker.pageLoadTime) / 1000);
@@ -64,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return window.visitorTracker.data;
         }
-        // Retorna null se o tracker não for encontrado.
         return null; 
     };
 
@@ -84,13 +75,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sendButton.classList.add('is-loading');
 
         try {
-            // ATUALIZADO: Coleta os dados do visitante para enviar no payload.
             const visitorData = getVisitorDataPayload();
             
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // ATUALIZADO: O corpo da requisição agora inclui o histórico e os dados do visitante.
                 body: JSON.stringify({ 
                     history: conversationHistory,
                     visitorData: visitorData 
@@ -102,15 +91,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
-            let botReply = data.reply;
-
-            if (botReply.includes('[WHATSAPP_TRANSFER]') || botReply.includes('[CONVERSA_FINALIZADA]')) {
+            
+            // CORREÇÃO: Verifica o status de conclusão enviado pela API.
+            if (data.conclusion) {
                 isConversationConcluded = true;
-                console.log('[DEBUG] Conversation marked as concluded. Abandonment report will be disabled.');
+                console.log(`[DEBUG] Conversation marked as concluded with status: ${data.conclusion}. Abandonment report will be disabled.`);
             }
             
-            addMessage(botReply, 'assistant');
-            conversationHistory.push({ role: 'assistant', content: botReply });
+            addMessage(data.reply, 'assistant');
+            // Adiciona a resposta da IA (já sem a flag) ao histórico.
+            conversationHistory.push({ role: 'assistant', content: data.reply });
 
         } catch (error) {
             console.error("[DEBUG] CRITICAL: An error occurred during the fetch.", error);
@@ -129,10 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener('beforeunload', () => {
+        // Esta condição agora funcionará corretamente.
         if (!isConversationConcluded && conversationHistory.length > 1) {
             console.log('[DEBUG] Unload event triggered. Sending abandonment report.');
             
-            // ATUALIZADO: Inclui os dados do visitante no relatório de abandono.
             const visitorData = getVisitorDataPayload();
             const payload = {
                 history: conversationHistory,

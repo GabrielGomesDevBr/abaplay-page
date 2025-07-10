@@ -1,7 +1,7 @@
 /**
  * api/index.js
- * VERSÃO FASE 3: Backend atualizado para receber e processar dados do visitante,
- * enriquecer o prompt da IA e enviar e-mails de notificação completos.
+ * VERSÃO CORRIGIDA: Lógica de flags ajustada e prompt da IA aprimorado
+ * para evitar e-mails duplicados.
  */
 
 // --- 1. Importações ---
@@ -30,18 +30,12 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // --- 4. Middlewares ---
 app.use(express.json());
-// ATUALIZADO: Aumenta o limite do payload para acomodar o histórico e os novos dados.
 app.use(express.text({ type: 'text/plain', limit: '50kb' })); 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 
 // --- 5. Funções Auxiliares ---
 
-/**
- * NOVO: Cria uma tabela HTML com os dados coletados do visitante.
- * @param {object} visitorData - O objeto com os dados do visitante.
- * @returns {string} - Uma string HTML formatada como tabela.
- */
 function createVisitorDataTable(visitorData) {
     if (!visitorData) {
         return '<p>Nenhum dado adicional do visitante foi coletado.</p>';
@@ -83,12 +77,6 @@ function createVisitorDataTable(visitorData) {
     return html;
 }
 
-/**
- * ATUALIZADO: Processa a conversa e os dados do visitante para notificar a equipe.
- * @param {Array} conversationHistory - O histórico da conversa.
- * @param {object} visitorData - Os dados coletados do visitante.
- * @param {string} type - O tipo de notificação ('TRANSFER' ou 'ANALYSIS').
- */
 async function processConversationAndNotify(conversationHistory, visitorData, type) {
     console.log(`Iniciando processamento de notificação. Tipo: ${type}`);
     
@@ -151,10 +139,8 @@ async function processConversationAndNotify(conversationHistory, visitorData, ty
             `<p style="margin: 5px 0;"><strong>${msg.role === 'user' ? 'Lead' : 'SDR Virtual'}:</strong> ${msg.content}</p>`
         ).join('');
         
-        // NOVO: Gera a tabela de dados do visitante.
         const visitorDataHtml = createVisitorDataTable(visitorData);
 
-        // ATUALIZADO: Monta o corpo do e-mail com as três seções.
         let emailBody = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1 style="color: #0d1117;">${title}</h1>
@@ -197,7 +183,6 @@ async function processConversationAndNotify(conversationHistory, visitorData, ty
 
 app.post('/api/chat', async (req, res) => {
     try {
-        // ATUALIZADO: Recebe history e visitorData.
         const { history, visitorData } = req.body;
         if (!history || !Array.isArray(history)) {
             return res.status(400).json({ error: 'O histórico da conversa é obrigatório.' });
@@ -210,19 +195,17 @@ app.post('/api/chat', async (req, res) => {
               Você é um Especialista de Produto Virtual da ABAPlay. Seu objetivo é qualificar leads (entendendo a dor principal) e transferi-los para um especialista humano no WhatsApp. Seu tom é sempre consultivo, empático e profissional.
 
               ### BASE DE CONHECIMENTO
-              - Nossos Pilares: Serenidade Operacional (organiza a gestão e economiza tempo), Excelência Clínica (padroniza o atendimento com +400 programas), Aliança com os Pais (aumenta a confiança com um portal de acompanhamento).
+              - Nossos Pilares: Serenidade Operacional, Excelência Clínica, Aliança com os Pais.
               - Nosso Preço: R$ 34,90 por paciente/mês (mínimo de 10).
 
               ### REGRAS CRÍTICAS DE AÇÃO
-              1.  SEJA NATURAL: Converse como um humano. Faça uma pergunta de cada vez. Não seja repetitivo.
+              1.  SEJA NATURAL: Converse como um humano. Faça uma pergunta de cada vez.
               2.  QUALIFIQUE: Entenda o nome do lead, a clínica e o principal desafio.
-              3.  CONECTE E CONVIDE: Após entender o desafio, conecte-o brevemente a um de nossos pilares e IMEDIATAMENTE convide para falar com o especialista no WhatsApp.
-              4.  EXECUTE A TRANSFERÊNCIA: Se o lead aceitar o convite para o WhatsApp, sua resposta DEVE ser esta e SOMENTE esta, com a formatação exata:
-                  "Perfeito! Para continuar, por favor, clique no link abaixo. Nossa equipe atende de Seg a Sex em horário comercial, e sua mensagem será respondida com prioridade.
-
-                  [Clique aqui para falar com um especialista](https://wa.me/5511988543437?text=Olá!%20Vim%20do%20site%20da%20ABAPlay%20e%20gostaria%20de%20falar%20com%20um%20especialista.)"
+              3.  CONECTE E CONVIDE: Após entender o desafio, conecte-o a um pilar e IMEDIATAMENTE convide para o WhatsApp.
+              4.  EXECUTE A TRANSFERÊNCIA: Se o lead ACEITAR o convite para o WhatsApp, sua resposta DEVE ser esta e SOMENTE esta, com a formatação exata:
+                  "Perfeito! Para continuar, por favor, clique no link abaixo..."
                   E então, adicione a flag [WHATSAPP_TRANSFER] no final.
-              5.  OBJEÇÕES: Se perguntarem o preço, seja transparente. Se recusarem a continuar, seja educado e use a flag [CONVERSA_FINALIZADA].
+              5.  ENCERRAMENTO: Se o lead RECUSAR o convite ou indicar que não quer mais conversar (ex: "só queria o preço", "obrigado", "não agora"), seja educado, agradeça e finalize. Sua resposta DEVE terminar com a flag [CONVERSA_FINALIZADA].
             `
         };
 
@@ -235,22 +218,30 @@ app.post('/api/chat', async (req, res) => {
 
         let botReply = chatCompletion.choices[0].message.content;
         
-        const finalHistory = [...history, { role: 'assistant', content: botReply }];
+        // CORREÇÃO: Adiciona uma flag para o status da conclusão.
+        let conclusionStatus = null;
+        let finalHistory = [...history];
 
         if (botReply.includes('[WHATSAPP_TRANSFER]')) {
             console.log("Transferência para WhatsApp detectada! Disparando e-mail de alerta...");
             botReply = botReply.replace('[WHATSAPP_TRANSFER]', '').trim();
-            // ATUALIZADO: Passa os dados do visitante para a função de notificação.
+            conclusionStatus = 'TRANSFER';
+            finalHistory.push({ role: 'assistant', content: botReply });
             processConversationAndNotify(finalHistory, visitorData, 'TRANSFER');
         } 
         else if (botReply.includes('[CONVERSA_FINALIZADA]')) {
             console.log("Conversa finalizada detectada! Disparando e-mail de análise...");
             botReply = botReply.replace('[CONVERSA_FINALIZADA]', '').trim();
-            // ATUALIZADO: Passa os dados do visitante para a função de notificação.
+            conclusionStatus = 'FINALIZED';
+            finalHistory.push({ role: 'assistant', content: botReply });
             processConversationAndNotify(finalHistory, visitorData, 'ANALYSIS');
+        } else {
+            // Se não houver flag, apenas adiciona a resposta ao histórico
+            finalHistory.push({ role: 'assistant', content: botReply });
         }
         
-        res.json({ reply: botReply });
+        // CORREÇÃO: Envia a resposta limpa e o status da conclusão para o cliente.
+        res.json({ reply: botReply, conclusion: conclusionStatus });
 
     } catch (error) {
         console.error("Erro na rota /api/chat:", error);
@@ -260,12 +251,10 @@ app.post('/api/chat', async (req, res) => {
 
 app.post('/api/notify-abandoned', (req, res) => {
     try {
-        // ATUALIZADO: O corpo agora é um objeto JSON.
         const { history, visitorData } = JSON.parse(req.body);
 
         if (history && Array.isArray(history) && history.length > 1) {
             console.log("Conversa abandonada detectada! Disparando e-mail de análise...");
-            // ATUALIZADO: Passa os dados do visitante para a função de notificação.
             processConversationAndNotify(history, visitorData, 'ANALYSIS');
         } else {
             console.log("Recebida notificação de abandono, mas sem histórico de conversa válido para processar.");
@@ -277,6 +266,7 @@ app.post('/api/notify-abandoned', (req, res) => {
         res.status(500).send("Erro ao processar a notificação de abandono.");
     }
 });
+
 
 // --- 7. Inicialização do Servidor ---
 app.listen(PORT, () => {
