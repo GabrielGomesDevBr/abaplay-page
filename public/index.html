@@ -21,8 +21,11 @@
 
     <!-- 5. CSS para o Chat -->
     <link rel="stylesheet" href="css/chat.css">
+    
+    <!-- 6. CSS para Animações e Efeitos Visuais -->
+    <link rel="stylesheet" href="css/animations.css">
 
-    <!-- 6. Configuração da Identidade Visual (Tailwind) -->
+    <!-- 7. Configuração da Identidade Visual (Tailwind) -->
     <script>
         tailwind.config = {
             theme: {
@@ -69,6 +72,47 @@
         .chat-send-btn .icon-loading { display: none; }
         .chat-send-btn.is-loading .icon-send { display: none; }
         .chat-send-btn.is-loading .icon-loading { display: inline-block; }
+        
+        /* Animações personalizadas */
+        @keyframes blob {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
+        }
+        
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        
+        .animation-delay-300 {
+            animation-delay: 0.3s;
+        }
+        
+        /* Efeitos visuais aprimorados */
+        .transform-scale-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .transform-scale-hover:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="bg-brand-light font-sans text-brand-dark antialiased" 
@@ -148,70 +192,215 @@
                     <p class="text-lg text-brand-muted">Nossa plataforma integra os três pilares que definem uma clínica de referência, criando um ciclo virtuoso de crescimento e reputação.</p>
                 </div>
                 <div class="grid md:grid-cols-3 gap-8">
-                    <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2"><h3 class="font-heading text-2xl font-bold text-white mb-4">Serenidade Operacional</h3><p class="text-brand-muted mb-6">Transforme o caos administrativo em um fluxo intuitivo, liberando sua equipe para o que realmente importa: o cuidado.</p><ul class="space-y-4 text-gray-300"><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Economize até 4h de trabalho por paciente/mês.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Gere relatórios profissionais em PDF com um clique.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Reduza o estresse da equipe e o turnover de talentos.</span></li></ul></div>
-                    <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2"><h3 class="font-heading text-2xl font-bold text-white mb-4">Excelência Clínica</h3><p class="text-brand-muted mb-6">Eleve a qualidade do seu atendimento com uma base de conhecimento curada e supervisionada por especialistas de ponta.</p><ul class="space-y-4 text-gray-300"><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Acesso a +400 programas de intervenção prontos.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Garanta padronização metodológica em toda a equipe.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Atue com a segurança de protocolos baseados em evidência.</span></li></ul></div>
-                    <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2">
-                        <h3 class="font-heading text-2xl font-bold text-white mb-4">Aliança Terapêutica</h3>
-                        <p class="text-brand-muted mb-6">Fortaleça a colaboração entre terapeutas e a relação com as famílias através de uma comunicação centralizada e assíncrona.</p>
-                        <ul class="space-y-4 text-gray-300">
-                            <li class="flex items-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <span>Chat em tempo real com os pais para alinhamento contínuo.</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <span>Canal de discussão de casos para a equipe terapêutica.</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <span>Aumente o engajamento e a confiança de todos os envolvidos.</span>
-                            </li>
-                        </ul>
+                    <div class="advantage-card">
+                        <div class="p-8">
+                            <h3 class="font-heading text-2xl font-bold text-white mb-4">Serenidade Operacional</h3>
+                            <p class="text-brand-muted mb-6">Transforme o caos administrativo em um fluxo intuitivo, liberando sua equipe para o que realmente importa: o cuidado.</p>
+                            <ul class="space-y-4 text-gray-300">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Economize até 4h de trabalho por paciente/mês.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Gere relatórios profissionais em PDF com um clique.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Reduza o estresse da equipe e o turnover de talentos.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="advantage-card">
+                        <div class="p-8">
+                            <h3 class="font-heading text-2xl font-bold text-white mb-4">Excelência Clínica</h3>
+                            <p class="text-brand-muted mb-6">Eleve a qualidade do seu atendimento com uma base de conhecimento curada e supervisionada por especialistas de ponta.</p>
+                            <ul class="space-y-4 text-gray-300">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Acesso a +400 programas de intervenção prontos.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Garanta padronização metodológica em toda a equipe.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Atue com a segurança de protocolos baseados em evidência.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="advantage-card">
+                        <div class="p-8">
+                            <h3 class="font-heading text-2xl font-bold text-white mb-4">Aliança Terapêutica</h3>
+                            <p class="text-brand-muted mb-6">Fortaleça a colaboração entre terapeutas e a relação com as famílias através de uma comunicação centralizada e assíncrona.</p>
+                            <ul class="space-y-4 text-gray-300">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Chat em tempo real com os pais para alinhamento contínuo.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Canal de discussão de casos para a equipe terapêutica.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Aumente o engajamento e a confiança de todos os envolvidos.</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- INÍCIO DA SEÇÃO ATUALIZADA -->
-        <section id="niveis-ajuda" class="py-20 md:py-28 bg-brand-light">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-brand-dark">Veja a independência acontecer, cor por cor</h2>
+        <section id="niveis-ajuda" class="py-20 md:py-28 bg-gradient-to-br from-brand-bg to-brand-light relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full opacity-5">
+                <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-brand-accent rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+                <div class="absolute top-1/3 right-1/4 w-64 h-64 bg-prompt-independent rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+                <div class="absolute bottom-1/4 left-1/3 w-64 h-64 bg-prompt-total rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+            </div>
+            
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="text-center mb-16 animate-fade-in-up">
+                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-brand-dark mb-4">Veja a independência acontecer, cor por cor</h2>
                     <p class="text-lg text-gray-600 mt-4 max-w-3xl mx-auto">
                         Nosso maior diferencial é a "Escadinha do Aprendizado". No ABAplay, cada cor representa um degrau na evolução da criança, do apoio total à autonomia. É a forma mais clara e motivadora de visualizar o progresso real.
                     </p>
                 </div>
+                
                 <div class="grid lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <div class="p-6 rounded-xl bg-brand-bg">
-                            <h3 class="font-bold text-2xl mb-6 text-brand-dark">A Hierarquia de Níveis de Ajuda (Prompts)</h3>
-                            <div>
-                                <div class="relative pl-10 pb-8 border-l-2 border-gray-200">
-                                    <div class="absolute -left-4 top-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold border-4 border-brand-bg bg-prompt-total"><i class="fa-solid fa-hand-paper"></i></div>
-                                    <h4 class="font-bold text-lg text-brand-dark">Ajuda Física Total</h4>
-                                    <p class="text-gray-600">O terapeuta guia completamente o movimento da criança.</p>
+                    <div class="animate-fade-in-up">
+                        <div class="p-6 rounded-2xl bg-white shadow-xl border border-gray-100 h-full">
+                            <h3 class="font-heading text-2xl mb-6 text-brand-dark">A Hierarquia de Níveis de Ajuda (Prompts)</h3>
+                            <div class="space-y-6">
+                                <!-- Nível 1 -->
+                                <div class="progress-point" id="point-total">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 mr-4">
+                                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-prompt-gradient-total help-level-icon point-icon">
+                                                <i class="fa-solid fa-hand-paper"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-lg text-brand-dark point-label">Ajuda Física Total</h4>
+                                            <p class="text-gray-600 mt-1">O terapeuta guia completamente o movimento da criança.</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="relative pl-10 pb-8 border-l-2 border-gray-200">
-                                    <div class="absolute -left-4 top-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold border-4 border-brand-bg bg-prompt-partial"><i class="fa-solid fa-hand-point-up"></i></div>
-                                    <h4 class="font-bold text-lg text-brand-dark">Ajuda Física Parcial</h4>
-                                    <p class="text-gray-600">Um leve toque para iniciar ou corrigir a ação.</p>
+                                
+                                <!-- Nível 2 -->
+                                <div class="progress-point" id="point-partial">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 mr-4">
+                                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-prompt-gradient-partial help-level-icon point-icon">
+                                                <i class="fa-solid fa-hand-point-up"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-lg text-brand-dark point-label">Ajuda Física Parcial</h4>
+                                            <p class="text-gray-600 mt-1">Um leve toque para iniciar ou corrigir a ação.</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="relative pl-10 pb-8 border-l-2 border-gray-200">
-                                    <div class="absolute -left-4 top-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold border-4 border-brand-bg bg-prompt-gestural"><i class="fa-solid fa-hand-point-right"></i></div>
-                                    <h4 class="font-bold text-lg text-brand-dark">Ajuda Gestual ou Verbal</h4>
-                                    <p class="text-gray-600">Um gesto, como apontar, ou uma instrução falada.</p>
+                                
+                                <!-- Nível 3 -->
+                                <div class="progress-point" id="point-gestural">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 mr-4">
+                                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-r from-blue-500 to-blue-600 help-level-icon point-icon">
+                                                <i class="fa-solid fa-hand-point-right"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-lg text-brand-dark point-label">Dica Gestual</h4>
+                                            <p class="text-gray-600 mt-1">Um gesto, como apontar, para direcionar a criança.</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="relative pl-10 last:pb-0 last:border-l-2 last:border-transparent">
-                                    <div class="absolute -left-4 top-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold border-4 border-brand-bg bg-prompt-independent"><i class="fa-solid fa-star"></i></div>
-                                    <h4 class="font-bold text-lg text-brand-dark">Independente</h4>
-                                    <p class="text-gray-600">A criança realiza a tarefa de forma autônoma. A grande conquista!</p>
+                                
+                                <!-- Nível 4 -->
+                                <div class="progress-point" id="point-verbal">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 mr-4">
+                                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-r from-purple-500 to-purple-600 help-level-icon point-icon">
+                                                <i class="fa-solid fa-comment"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-lg text-brand-dark point-label">Dica Verbal</h4>
+                                            <p class="text-gray-600 mt-1">Uma instrução falada para guiar a criança.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Nível 5 -->
+                                <div class="progress-point" id="point-independent">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 mr-4">
+                                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-prompt-gradient-independent help-level-icon point-icon">
+                                                <i class="fa-solid fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-lg text-brand-dark point-label">Independente</h4>
+                                            <p class="text-gray-600 mt-1">A criança realiza a tarefa de forma autônoma. A grande conquista!</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="text-center">
-                        <img src="https://placehold.co/600x400/E2E8F0/4A5568?text=Gr%C3%A1fico+de+Evolu%C3%A7%C3%A3o" alt="Gráfico de evolução" class="w-full h-auto rounded-xl shadow-lg" id="prompt-chart-image">
-                        <p class="mt-6 text-brand-dark font-medium text-lg">
+                    
+                    <div class="animate-fade-in-up animation-delay-300">
+                        <div class="evolution-chart-container bg-white">
+                            <div class="relative w-full rounded-xl overflow-hidden" style="padding-top: 66%;">
+                                <img src="assets/images/ajuda_fisica_total.png" 
+                                     alt="Ajuda Física Total" 
+                                     class="absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000" 
+                                     id="prompt-chart-image">
+                                
+                                <!-- Legenda com cor predominante -->
+                                <div class="absolute top-4 left-4 bg-prompt-total text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg" id="chart-legend">
+                                    Ajuda Física Total
+                                </div>
+                                
+                                <!-- Indicadores de fase -->
+                                <div class="absolute bottom-4 left-0 right-0">
+                                    <div class="flex justify-center space-x-2">
+                                        <div class="w-3 h-3 rounded-full bg-prompt-total opacity-100 phase-indicator" data-phase="0"></div>
+                                        <div class="w-3 h-3 rounded-full bg-prompt-partial opacity-50 phase-indicator" data-phase="1"></div>
+                                        <div class="w-3 h-3 rounded-full bg-prompt-gestural opacity-50 phase-indicator" data-phase="2"></div>
+                                        <div class="w-3 h-3 rounded-full bg-brand-accent opacity-50 phase-indicator" data-phase="3"></div>
+                                        <div class="w-3 h-3 rounded-full bg-prompt-independent opacity-50 phase-indicator" data-phase="4"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mt-6 text-brand-dark font-medium text-lg text-center">
                             Para a família, é a emoção de ver o gráfico ficar verde. Para o terapeuta, é a certeza de que a metodologia está sendo seguida com rigor.
                         </p>
                     </div>
@@ -327,21 +516,127 @@
     <script src="js/dataCollector.js" defer></script>
     <script src="js/chat.js" defer></script>
     <script>
-        // Script para a imagem dinâmica
-        const chartImage = document.getElementById('prompt-chart-image');
-        if (chartImage) {
-            const images = [
-                'https://placehold.co/600x400/ef4444/FFFFFF?text=Fase+1:+Ajuda+Total',
-                'https://placehold.co/600x400/f97316/FFFFFF?text=Fase+2:+Ajuda+Parcial',
-                'https://placehold.co/600x400/eab308/FFFFFF?text=Fase+3:+Ajuda+Gestual',
-                'https://placehold.co/600x400/16a34a/FFFFFF?text=Fase+4:+Independente!',
-            ];
-            let currentImageIndex = 0;
-            setInterval(() => {
-                currentImageIndex = (currentImageIndex + 1) % images.length;
-                chartImage.src = images[currentImageIndex];
-            }, 3000);
-        }
+        // Script para animar os pontos de progresso quando a seção está visível
+            document.addEventListener('DOMContentLoaded', function() {
+                const observerOptions = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.5
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const points = document.querySelectorAll('.progress-point');
+                            points.forEach((point, index) => {
+                                setTimeout(() => {
+                                    point.classList.add('active');
+                                }, index * 200);
+                            });
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+                
+                const progressSection = document.getElementById('niveis-ajuda');
+                if (progressSection) {
+                    observer.observe(progressSection);
+                }
+                
+                // Script para a imagem dinâmica com cores vivas
+                const chartImage = document.getElementById('prompt-chart-image');
+                const chartLegend = document.getElementById('chart-legend');
+                if (chartImage && chartLegend) {
+                    const slides = [
+                        {
+                            image: 'assets/images/ajuda_fisica_total.png',
+                            alt: 'Ajuda Física Total',
+                            legend: 'Ajuda Física Total',
+                            colorClass: 'bg-prompt-total', // laranja
+                            phase: 0,
+                            pointId: 'point-total'
+                        },
+                        {
+                            image: 'assets/images/ajuda_fisica_parcial.png',
+                            alt: 'Ajuda Física Parcial',
+                            legend: 'Ajuda Física Parcial',
+                            colorClass: 'bg-prompt-partial', // amarelo
+                            phase: 1,
+                            pointId: 'point-partial'
+                        },
+                        {
+                            image: 'assets/images/dica_gestual.png',
+                            alt: 'Dica Gestual',
+                            legend: 'Dica Gestual',
+                            colorClass: 'bg-blue-500', // azul
+                            phase: 2,
+                            pointId: 'point-gestural'
+                        },
+                        {
+                            image: 'assets/images/dica_verbal.png',
+                            alt: 'Dica Verbal',
+                            legend: 'Dica Verbal',
+                            colorClass: 'bg-purple-500', // roxo
+                            phase: 3,
+                            pointId: 'point-verbal'
+                        },
+                        {
+                            image: 'assets/images/independente.png',
+                            alt: 'Independente',
+                            legend: 'Independente',
+                            colorClass: 'bg-prompt-independent', // verde
+                            phase: 4,
+                            pointId: 'point-independent'
+                        }
+                    ];
+                    
+                    const phaseIndicators = document.querySelectorAll('[data-phase]');
+                    const progressPoints = document.querySelectorAll('.progress-point');
+                    let currentImageIndex = 0;
+                    
+                    // Função para atualizar a imagem, legenda e os indicadores
+                    function updateChart() {
+                        const currentSlide = slides[currentImageIndex];
+                        
+                        // Atualizar imagem
+                        chartImage.src = currentSlide.image;
+                        chartImage.alt = currentSlide.alt;
+                        
+                        // Atualizar legenda
+                        chartLegend.textContent = currentSlide.legend;
+                        chartLegend.className = `absolute top-4 left-4 ${currentSlide.colorClass} text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg`;
+                        
+                        // Atualizar indicadores de fase
+                        phaseIndicators.forEach((indicator, index) => {
+                            if (index === currentSlide.phase) {
+                                indicator.classList.add('opacity-100');
+                                indicator.classList.remove('opacity-50');
+                            } else {
+                                indicator.classList.add('opacity-50');
+                                indicator.classList.remove('opacity-100');
+                            }
+                        });
+                        
+                        // Destacar o ponto de progresso correspondente com um efeito mais suave
+                        progressPoints.forEach(point => {
+                            point.classList.remove('progress-point--active');
+                            // Remove todas as classes de cor ativas para evitar sobreposição
+                            slides.forEach(s => point.classList.remove(s.colorClass + '--active'));
+                        });
+                        
+                        const activePoint = document.getElementById(currentSlide.pointId);
+                        if (activePoint) {
+                            activePoint.classList.add('progress-point--active', currentSlide.colorClass + '--active');
+                        }
+                        
+                        currentImageIndex = (currentImageIndex + 1) % slides.length;
+                    }
+                    
+                    // Iniciar o carrossel de imagens
+                    updateChart(); // Mostrar a primeira imagem imediatamente
+                    setInterval(updateChart, 3000);
+                }
+            });
     </script>
 </body>
 </html>

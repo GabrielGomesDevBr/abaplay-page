@@ -1,0 +1,281 @@
+/* Animações e transições personalizadas */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+/* Efeitos de transição para os elementos */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.transform-scale-hover {
+  transition: all 0.3s ease;
+}
+
+.transform-scale-hover:hover {
+  transform: scale(1.05);
+}
+
+/* Estilos para a seção de níveis de ajuda */
+.help-level-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.help-level-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.help-level-icon {
+  transition: all 0.3s ease;
+}
+
+.help-level-card:hover .help-level-icon {
+  transform: scale(1.1);
+}
+
+/* Estilos para o gráfico de evolução */
+.evolution-chart-container {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s ease;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+}
+
+.evolution-chart-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.chart-placeholder {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  z-index: 1;
+}
+
+.chart-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 20px;
+}
+
+.chart-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #1e293b;
+}
+
+.chart-description {
+  font-size: 1rem;
+  color: #64748b;
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+/* Estilos para os indicadores de fase */
+.phase-indicator {
+  transition: opacity 0.3s ease;
+}
+
+/* Estilos para a legenda do gráfico */
+#chart-legend {
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Animação dos pontos de progresso */
+.progress-point {
+  position: relative;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0.7;
+  border-left: 4px solid transparent;
+}
+
+.progress-point:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 100px;
+  background: linear-gradient(to bottom, #cbd5e1, #94a3b8);
+  transform: translate(-50%, 30px);
+  z-index: -1;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.progress-point--active:not(:last-child)::after {
+    transform: translate(-50%, 30px) scaleY(0);
+    transform-origin: top;
+}
+
+.progress-point.active {
+  opacity: 1;
+}
+
+.progress-point.active .point-icon {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.progress-point.completed .point-icon {
+  background: #10b981 !important;
+  color: white;
+}
+
+.progress-point.completed .point-label {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Estilos para o ponto de progresso ativo */
+.progress-point--active {
+    opacity: 1;
+    transform: scale(1.03);
+    box-shadow: 0 8px 25px -5px rgba(0,0,0,0.08), 0 4px 10px -6px rgba(0,0,0,0.08);
+}
+
+/* Cores dinâmicas para o estado ativo */
+.bg-prompt-total--active {
+    background-color: rgba(239, 68, 68, 0.05);
+    border-left-color: #ef4444;
+}
+.bg-prompt-partial--active {
+    background-color: rgba(249, 115, 22, 0.05);
+    border-left-color: #f97316;
+}
+.bg-blue-500--active {
+    background-color: rgba(59, 130, 246, 0.05);
+    border-left-color: #3b82f6;
+}
+.bg-purple-500--active {
+    background-color: rgba(139, 92, 246, 0.05);
+    border-left-color: #8b5cf6;
+}
+.bg-prompt-independent--active {
+    background-color: rgba(22, 163, 74, 0.05);
+    border-left-color: #16a34a;
+}
+
+/* Gradientes para as cores dos níveis */
+.bg-prompt-gradient-total {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.bg-prompt-gradient-partial {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.bg-prompt-gradient-gestural {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+}
+
+.bg-prompt-gradient-independent {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+/* Efeitos para os cards das vantagens */
+.advantage-card {
+  background: linear-gradient(135deg, #161b22, #0d1117);
+  border-radius: 16px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.advantage-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.advantage-card:hover::before {
+  transform: scaleX(1);
+}
+
+.advantage-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Efeitos visuais gerais */
+.shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Estilos para os indicadores de fase */
+.phase-indicator {
+  transition: opacity 0.3s ease;
+}
+
+/* Estilos para a legenda do gráfico */
+#chart-legend {
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
