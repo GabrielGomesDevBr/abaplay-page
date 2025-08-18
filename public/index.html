@@ -15,11 +15,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- 4. Font Awesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- 4. CSS para o Chat -->
+    <!-- 5. CSS para o Chat -->
     <link rel="stylesheet" href="css/chat.css">
 
-    <!-- 5. Configuração da Identidade Visual (Tailwind) -->
+    <!-- 6. Configuração da Identidade Visual (Tailwind) -->
     <script>
         tailwind.config = {
             theme: {
@@ -32,6 +35,11 @@
                         'brand-stroke': '#30363d',
                         'brand-accent': '#4f46e5',
                         'brand-accent-light': '#eef2ff',
+                        // Cores atualizadas para a nova seção
+                        'prompt-total': '#ef4444',
+                        'prompt-partial': '#f97316',
+                        'prompt-gestural': '#eab308',
+                        'prompt-independent': '#16a34a',
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -142,18 +150,83 @@
                 <div class="grid md:grid-cols-3 gap-8">
                     <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2"><h3 class="font-heading text-2xl font-bold text-white mb-4">Serenidade Operacional</h3><p class="text-brand-muted mb-6">Transforme o caos administrativo em um fluxo intuitivo, liberando sua equipe para o que realmente importa: o cuidado.</p><ul class="space-y-4 text-gray-300"><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Economize até 4h de trabalho por paciente/mês.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Gere relatórios profissionais em PDF com um clique.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Reduza o estresse da equipe e o turnover de talentos.</span></li></ul></div>
                     <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2"><h3 class="font-heading text-2xl font-bold text-white mb-4">Excelência Clínica</h3><p class="text-brand-muted mb-6">Eleve a qualidade do seu atendimento com uma base de conhecimento curada e supervisionada por especialistas de ponta.</p><ul class="space-y-4 text-gray-300"><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Acesso a +400 programas de intervenção prontos.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Garanta padronização metodológica em toda a equipe.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Atue com a segurança de protocolos baseados em evidência.</span></li></ul></div>
-                    <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2"><h3 class="font-heading text-2xl font-bold text-white mb-4">Aliança com os Pais</h3><p class="text-brand-muted mb-6">Fortaleça a relação com as famílias através de uma comunicação transparente e construa uma reputação de confiança inabalável.</p><ul class="space-y-4 text-gray-300"><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Portal dos pais com acesso a gráficos e anotações.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Aumente o engajamento parental, crucial para a terapia.</span></li><li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Posicione sua clínica como uma parceira de vanguarda.</span></li></ul></div>
+                    <div class="bg-[#161b22] p-8 rounded-xl border border-brand-stroke shadow-lg transition-all transform hover:border-brand-accent hover:-translate-y-2">
+                        <h3 class="font-heading text-2xl font-bold text-white mb-4">Aliança Terapêutica</h3>
+                        <p class="text-brand-muted mb-6">Fortaleça a colaboração entre terapeutas e a relação com as famílias através de uma comunicação centralizada e assíncrona.</p>
+                        <ul class="space-y-4 text-gray-300">
+                            <li class="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span>Chat em tempo real com os pais para alinhamento contínuo.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span>Canal de discussão de casos para a equipe terapêutica.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span>Aumente o engajamento e a confiança de todos os envolvidos.</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </section>
 
-         <section id="plataforma" class="py-20 md:py-28 bg-brand-light">
+        <!-- INÍCIO DA SEÇÃO ATUALIZADA -->
+        <section id="niveis-ajuda" class="py-20 md:py-28 bg-brand-light">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-brand-dark">Veja a independência acontecer, cor por cor</h2>
+                    <p class="text-lg text-gray-600 mt-4 max-w-3xl mx-auto">
+                        Nosso maior diferencial é a "Escadinha do Aprendizado". No ABAplay, cada cor representa um degrau na evolução da criança, do apoio total à autonomia. É a forma mais clara e motivadora de visualizar o progresso real.
+                    </p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <div class="p-6 rounded-xl bg-brand-bg">
+                            <h3 class="font-bold text-2xl mb-6 text-brand-dark">A Hierarquia de Níveis de Ajuda (Prompts)</h3>
+                            <div>
+                                <div class="relative pl-10 pb-8 border-l-2 border-gray-200">
+                                    <div class="absolute -left-4 top-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold border-4 border-brand-bg bg-prompt-total"><i class="fa-solid fa-hand-paper"></i></div>
+                                    <h4 class="font-bold text-lg text-brand-dark">Ajuda Física Total</h4>
+                                    <p class="text-gray-600">O terapeuta guia completamente o movimento da criança.</p>
+                                </div>
+                                <div class="relative pl-10 pb-8 border-l-2 border-gray-200">
+                                    <div class="absolute -left-4 top-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold border-4 border-brand-bg bg-prompt-partial"><i class="fa-solid fa-hand-point-up"></i></div>
+                                    <h4 class="font-bold text-lg text-brand-dark">Ajuda Física Parcial</h4>
+                                    <p class="text-gray-600">Um leve toque para iniciar ou corrigir a ação.</p>
+                                </div>
+                                <div class="relative pl-10 pb-8 border-l-2 border-gray-200">
+                                    <div class="absolute -left-4 top-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold border-4 border-brand-bg bg-prompt-gestural"><i class="fa-solid fa-hand-point-right"></i></div>
+                                    <h4 class="font-bold text-lg text-brand-dark">Ajuda Gestual ou Verbal</h4>
+                                    <p class="text-gray-600">Um gesto, como apontar, ou uma instrução falada.</p>
+                                </div>
+                                <div class="relative pl-10 last:pb-0 last:border-l-2 last:border-transparent">
+                                    <div class="absolute -left-4 top-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold border-4 border-brand-bg bg-prompt-independent"><i class="fa-solid fa-star"></i></div>
+                                    <h4 class="font-bold text-lg text-brand-dark">Independente</h4>
+                                    <p class="text-gray-600">A criança realiza a tarefa de forma autônoma. A grande conquista!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <img src="https://placehold.co/600x400/E2E8F0/4A5568?text=Gr%C3%A1fico+de+Evolu%C3%A7%C3%A3o" alt="Gráfico de evolução" class="w-full h-auto rounded-xl shadow-lg" id="prompt-chart-image">
+                        <p class="mt-6 text-brand-dark font-medium text-lg">
+                            Para a família, é a emoção de ver o gráfico ficar verde. Para o terapeuta, é a certeza de que a metodologia está sendo seguida com rigor.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- FIM DA SEÇÃO ATUALIZADA -->
+
+         <section id="plataforma" class="py-20 md:py-28 bg-brand-bg">
             <div class="container mx-auto px-6">
                  <div class="text-center max-w-3xl mx-auto mb-20"><h2 class="font-heading text-3xl md:text-4xl font-bold mb-4">A Plataforma, em Detalhes.</h2><p class="text-lg text-gray-600">Cada recurso foi desenhado para eliminar um obstáculo e criar uma oportunidade.</p></div>
                 <div class="space-y-24">
                     <div class="grid md:grid-cols-2 gap-12 items-center"><div class="md:order-1"><h3 class="font-heading text-3xl font-bold mb-4">Biblioteca de Programas: O Coração da Terapia.</h3><p class="text-gray-600 leading-relaxed">Abandone as planilhas. Tenha acesso instantâneo a uma biblioteca com mais de 400 programas de intervenção, cobrindo Psicologia, Fonoaudiologia, T.O. e mais. Cada programa, baseado em evidências, garante que sua equipe atue com a segurança de um sênior.</p></div><div class="md:order-2"><img src="assets/images/feature-library.png" alt="Imagem da Biblioteca de Programas ABAPlay" class="rounded-xl shadow-lg w-full" onerror="this.onerror=null;this.src='https://placehold.co/600x450/eef2ff/4f46e5?text=Biblioteca+de+Programas'"/></div></div>
                      <div class="grid md:grid-cols-2 gap-12 items-center"><div class="md:order-2"><h3 class="font-heading text-3xl font-bold mb-4">Relatórios Instantâneos: Do Clínico ao Estratégico.</h3><p class="text-gray-600 leading-relaxed">Com um único clique, transforme dados brutos em relatórios PDF elegantes e profissionais. Perfeitos para apresentar a evolução aos pais, submeter a convênios ou para análise de supervisão. Libere seus terapeutas da burocracia.</p></div><div class="md:order-1"><img src="assets/images/feature-reports.png" alt="Imagem de Relatórios Instantâneos na ABAPlay" class="rounded-xl shadow-lg w-full" onerror="this.onerror=null;this.src='https://placehold.co/600x450/eef2ff/4f46e5?text=Relat%C3%B3rios+Instant%C3%A2neos'"/></div></div>
-                    <div class="grid md:grid-cols-2 gap-12 items-center"><div class="md:order-1"><h3 class="font-heading text-3xl font-bold mb-4">Portal dos Pais: Transparência que Gera Confiança.</h3><p class="text-gray-600 leading-relaxed">Ofereça às famílias uma janela para o progresso. O portal exclusivo permite que os pais acompanhem gráficos de evolução, vejam programas e leiam anotações. Essa visibilidade cria uma poderosa aliança, tornando os pais verdadeiros parceiros na terapia.</p></div><div class="md:order-2"><img src="assets/images/feature-portal.png" alt="Imagem do Portal dos Pais na ABAPlay" class="rounded-xl shadow-lg w-full" onerror="this.onerror=null;this.src='https://placehold.co/600x450/eef2ff/4f46e5?text=Portal+dos+Pais'"/></div></div>
+                    <div class="grid md:grid-cols-2 gap-12 items-center"><div class="md:order-1"><h3 class="font-heading text-3xl font-bold mb-4">Comunicação Centralizada: Acelerando a Evolução.</h3><p class="text-gray-600 leading-relaxed">Ofereça às famílias um canal direto e seguro para falar com a equipe. Internamente, os terapeutas podem discutir casos de forma assíncrona, garantindo que todos estejam alinhados. Essa comunicação integrada cria uma poderosa aliança, tornando os pais e a equipe verdadeiros parceiros na terapia.</p></div><div class="md:order-2"><img src="assets/images/feature-portal.png" alt="Imagem do Portal dos Pais na ABAPlay" class="rounded-xl shadow-lg w-full" onerror="this.onerror=null;this.src='https://placehold.co/600x450/eef2ff/4f46e5?text=Portal+de+Comunica%C3%A7%C3%A3o'"/></div></div>
                 </div>
             </div>
          </section>
@@ -166,7 +239,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"><div class="md:col-span-1"><h4 class="font-bold text-lg text-white">Gestão de Programas</h4></div><div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6"><div><p class="text-sm font-bold text-red-400 mb-2">MODO COMUM</p><p class="text-gray-400">Planilhas e pastas desorganizadas.</p></div><div><p class="text-sm font-bold text-green-400 mb-2">MODO ABAPLAY</p><p class="text-gray-200">Biblioteca centralizada e padronizada.</p></div></div></div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"><div class="md:col-span-1"><h4 class="font-bold text-lg text-white">Coleta de Dados</h4></div><div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6"><div><p class="text-sm font-bold text-red-400 mb-2">MODO COMUM</p><p class="text-gray-400">Papel, caneta e digitação posterior.</p></div><div><p class="text-sm font-bold text-green-400 mb-2">MODO ABAPLAY</p><p class="text-gray-200">Registro em tempo real, em segundos.</p></div></div></div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"><div class="md:col-span-1"><h4 class="font-bold text-lg text-white">Criação de Relatórios</h4></div><div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6"><div><p class="text-sm font-bold text-red-400 mb-2">MODO COMUM</p><p class="text-gray-400">Horas para compilar dados e formatar.</p></div><div><p class="text-sm font-bold text-green-400 mb-2">MODO ABAPLAY</p><p class="text-gray-200">PDFs profissionais gerados na hora.</p></div></div></div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"><div class="md:col-span-1"><h4 class="font-bold text-lg text-white">Comunicação com Pais</h4></div><div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6"><div><p class="text-sm font-bold text-red-400 mb-2">MODO COMUM</p><p class="text-gray-400">Reuniões esporádicas e relatórios verbais.</p></div><div><p class="text-sm font-bold text-green-400 mb-2">MODO ABAPLAY</p><p class="text-gray-200">Acesso 24/7 a gráficos de progresso.</p></div></div></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"><div class="md:col-span-1"><h4 class="font-bold text-lg text-white">Comunicação em Equipe</h4></div><div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6"><div><p class="text-sm font-bold text-red-400 mb-2">MODO COMUM</p><p class="text-gray-400">Grupos de WhatsApp e trocas informais.</p></div><div><p class="text-sm font-bold text-green-400 mb-2">MODO ABAPLAY</p><p class="text-gray-200">Chat com os pais e canal para discussão de casos.</p></div></div></div>
                      </div>
                 </div>
             </div>
@@ -242,12 +315,10 @@
                         </span>
                     </button>
                 </div>
-                <!-- INÍCIO DA ALTERAÇÃO: Nota de Privacidade -->
                 <p class="text-xs text-gray-400 text-center mt-3">
                     Ao continuar, seus dados de navegação e da conversa são coletados para melhorar o atendimento, conforme nossa 
                     <a href="politica-de-privacidade.html" target="_blank" class="underline hover:text-gray-600">Política de Privacidade</a>.
                 </p>
-                <!-- FIM DA ALTERAÇÃO -->
             </div>
         </div>
     </div>
@@ -255,5 +326,22 @@
     <!-- Scripts -->
     <script src="js/dataCollector.js" defer></script>
     <script src="js/chat.js" defer></script>
+    <script>
+        // Script para a imagem dinâmica
+        const chartImage = document.getElementById('prompt-chart-image');
+        if (chartImage) {
+            const images = [
+                'https://placehold.co/600x400/ef4444/FFFFFF?text=Fase+1:+Ajuda+Total',
+                'https://placehold.co/600x400/f97316/FFFFFF?text=Fase+2:+Ajuda+Parcial',
+                'https://placehold.co/600x400/eab308/FFFFFF?text=Fase+3:+Ajuda+Gestual',
+                'https://placehold.co/600x400/16a34a/FFFFFF?text=Fase+4:+Independente!',
+            ];
+            let currentImageIndex = 0;
+            setInterval(() => {
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                chartImage.src = images[currentImageIndex];
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
